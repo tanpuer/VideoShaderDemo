@@ -21,9 +21,9 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
     private lateinit var context: Context
     private lateinit var videoGLSurfaceView: VideoGLSurfaceView
     private lateinit var filter: BaseFilter
-    private var transformMatrix = FloatArray(16) {0f}
+    private var transformMatrix = FloatArray(16) { 0f }
     private lateinit var handler: android.os.Handler
-    private lateinit var mPlayer : ExoPlayerTool
+    private lateinit var mPlayer: ExoPlayerTool
 
     fun init(context: Context, videoGLSurfaceView: VideoGLSurfaceView, isPreviewStarted: Boolean) {
         this.isPreviewStarted = isPreviewStarted
@@ -36,6 +36,7 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
         mOESTextureId = GLUtils.createOESTextureObject()
 //        filter = BaseFilter(context, mOESTextureId)
         filter = GrayFilter(context, mOESTextureId)
+        filter.initProgram()
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -54,14 +55,18 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
         filter.drawFrame()
     }
 
-    private fun initSurfaceTexture() : Boolean {
+    private fun initSurfaceTexture(): Boolean {
         mSurfaceTexture = SurfaceTexture(mOESTextureId)
         mSurfaceTexture.setOnFrameAvailableListener {
             videoGLSurfaceView.requestRender()
         }
         handler.post {
             mPlayer = ExoPlayerTool.getInstance(context)
-            mPlayer.quickSetting(context, "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4", Surface(mSurfaceTexture))
+            mPlayer.quickSetting(
+                context,
+                "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4",
+                Surface(mSurfaceTexture)
+            )
             mPlayer.setPlayWhenReady(true)
         }
         return true
