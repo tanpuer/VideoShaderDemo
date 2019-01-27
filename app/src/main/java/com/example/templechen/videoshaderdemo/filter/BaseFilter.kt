@@ -7,7 +7,7 @@ import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.R
 import java.nio.FloatBuffer
 
-class BaseFilter {
+open class BaseFilter {
 
     companion object {
         const val aPosition = "aPosition"
@@ -16,12 +16,12 @@ class BaseFilter {
         const val uTextureSampler = "uTextureSampler"
     }
 
-    private var context: Context
+    protected var context: Context
     private var mOESTextureId: Int
     private var floatBuffer : FloatBuffer
-    private var vertexShader : Int
-    private var fragmentShader: Int
-    private var program: Int
+    protected var vertexShader : Int = -1
+    protected var fragmentShader: Int = -1
+    protected var program: Int = -1
     private var transformMatrix = FloatArray(16) {0f}
 
     private var aPositionLocation = -1
@@ -33,6 +33,10 @@ class BaseFilter {
         this.context = context
         mOESTextureId = oesTextureId
         floatBuffer = GLUtils.createBuffer(GLUtils.vertexData)
+        initProgram()
+    }
+
+    open fun initProgram() {
         vertexShader = GLUtils.loadShader(GLES20.GL_VERTEX_SHADER, GLUtils.readShaderFromResource(context, R.raw.base_vertex_shader))
         fragmentShader = GLUtils.loadShader(GLES20.GL_FRAGMENT_SHADER, GLUtils.readShaderFromResource(context, R.raw.base_fragment_shader))
         program = GLUtils.createProgram(vertexShader, fragmentShader)
