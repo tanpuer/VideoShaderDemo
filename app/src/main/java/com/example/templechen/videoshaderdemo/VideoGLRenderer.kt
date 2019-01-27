@@ -62,11 +62,7 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
         }
         handler.post {
             mPlayer = ExoPlayerTool.getInstance(context)
-            mPlayer.quickSetting(
-                context,
-                "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4",
-                Surface(mSurfaceTexture)
-            )
+            mPlayer.setVideoSurface(Surface(mSurfaceTexture))
             mPlayer.setPlayWhenReady(true)
         }
         return true
