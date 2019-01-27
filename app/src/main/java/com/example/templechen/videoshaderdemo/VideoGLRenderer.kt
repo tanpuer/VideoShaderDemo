@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.Surface
 import com.example.templechen.videoshaderdemo.filter.BaseFilter
+import com.example.templechen.videoshaderdemo.filter.FourPartFilter
 import com.example.templechen.videoshaderdemo.filter.GrayFilter
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 import javax.microedition.khronos.egl.EGLConfig
@@ -35,7 +36,8 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         mOESTextureId = GLUtils.createOESTextureObject()
 //        filter = BaseFilter(context, mOESTextureId)
-        filter = GrayFilter(context, mOESTextureId)
+//        filter = GrayFilter(context, mOESTextureId)
+        filter = FourPartFilter(context, mOESTextureId)
         filter.initProgram()
     }
 
