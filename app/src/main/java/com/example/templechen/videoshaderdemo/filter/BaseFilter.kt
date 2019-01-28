@@ -22,7 +22,7 @@ open class BaseFilter {
     protected var vertexShader: Int = -1
     protected var fragmentShader: Int = -1
     protected var program: Int = -1
-    private var transformMatrix = FloatArray(16) { 0f }
+    var transformMatrix = FloatArray(16) { 0f }
 
     private var aPositionLocation = -1
     private var uTextureMatrixLocation = -1
@@ -47,7 +47,9 @@ open class BaseFilter {
         program = GLUtils.createProgram(vertexShader, fragmentShader)
     }
 
-    fun drawFrame() {
+    open fun drawFrame() {
+        GLES20.glUseProgram(program)
+
         aPositionLocation = GLES20.glGetAttribLocation(program, aPosition)
         aTextureCoordinateLocation = GLES20.glGetAttribLocation(program, aTextureCoordinate)
         uTextureMatrixLocation = GLES20.glGetUniformLocation(program, uTextureMatrix)
@@ -67,9 +69,10 @@ open class BaseFilter {
         GLES20.glVertexAttribPointer(aTextureCoordinateLocation, 2, GLES20.GL_FLOAT, false, 16, floatBuffer)
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6)
+
+        GLES20.glDisableVertexAttribArray(aPositionLocation)
+        GLES20.glDisableVertexAttribArray(aTextureCoordinateLocation)
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
     }
 
-    fun setTransformMatrix(matrix: FloatArray) {
-        transformMatrix = matrix
-    }
 }

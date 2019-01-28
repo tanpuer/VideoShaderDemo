@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener{
 
     private lateinit var glSurfaceView: VideoGLSurfaceView
 
-    private lateinit var mPlayer : ExoPlayerTool
+    private var mPlayer : ExoPlayerTool? = null
     private lateinit var parentView: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,21 +28,21 @@ class MainActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener{
 
     private fun initPlayer() {
         mPlayer = ExoPlayerTool.getInstance(applicationContext)
-        mPlayer.quickSetting(
+        mPlayer?.quickSetting(
             this,
             "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4"
         )
-        mPlayer.addVideoListener(this)
+        mPlayer?.addVideoListener(this)
     }
 
     override fun onPause() {
         super.onPause()
-        mPlayer.setPlayWhenReady(false)
+        mPlayer?.setPlayWhenReady(false)
     }
 
     override fun onResume() {
         super.onResume()
-        mPlayer.setPlayWhenReady(true)
+        mPlayer?.setPlayWhenReady(true)
     }
 
     override fun onVideoSizeChanged(
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener{
 
     override fun onDestroy() {
         super.onDestroy()
-        mPlayer.release()
+        mPlayer?.release()
         glSurfaceView.destroy()
     }
 }

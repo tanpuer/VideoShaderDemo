@@ -10,6 +10,7 @@ import android.view.Surface
 import com.example.templechen.videoshaderdemo.filter.BaseFilter
 import com.example.templechen.videoshaderdemo.filter.FourPartFilter
 import com.example.templechen.videoshaderdemo.filter.GrayFilter
+import com.example.templechen.videoshaderdemo.filter.WaterMarkFilter
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -34,15 +35,18 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        mOESTextureId = GLUtils.createOESTextureObject()
+//        mOESTextureId = GLUtils.createOESTextureObject()
 //        filter = BaseFilter(context, mOESTextureId)
 //        filter = GrayFilter(context, mOESTextureId)
-        filter = FourPartFilter(context, mOESTextureId)
+//        filter = FourPartFilter(context, mOESTextureId)
+        filter = WaterMarkFilter(context, mOESTextureId)
         filter.initProgram()
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
     }
 
     override fun onDrawFrame(gl: GL10?) {
@@ -52,7 +56,7 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
         }
         mSurfaceTexture.updateTexImage()
         mSurfaceTexture.getTransformMatrix(transformMatrix)
-        filter.setTransformMatrix(transformMatrix)
+        filter.transformMatrix = transformMatrix
         GLES20.glClearColor(0f, 0f, 0f, 0f)
         filter.drawFrame()
     }
