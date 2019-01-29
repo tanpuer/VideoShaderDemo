@@ -5,7 +5,7 @@ import android.opengl.GLES20
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.R
 
-class GrayFilter(context: Context, oesTextureId: Int) : BaseFilter(context, oesTextureId) {
+open class GrayFilter(context: Context, oesTextureId: Int) : BaseFilter(context, oesTextureId) {
 
     override fun initProgram() {
         vertexShader = GLUtils.loadShader(
