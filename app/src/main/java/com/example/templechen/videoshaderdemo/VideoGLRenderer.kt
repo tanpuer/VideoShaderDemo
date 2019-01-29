@@ -7,10 +7,7 @@ import android.opengl.GLSurfaceView
 import android.os.Handler
 import android.os.Looper
 import android.view.Surface
-import com.example.templechen.videoshaderdemo.filter.BaseFilter
-import com.example.templechen.videoshaderdemo.filter.FourPartFilter
-import com.example.templechen.videoshaderdemo.filter.GrayFilter
-import com.example.templechen.videoshaderdemo.filter.WaterMarkFilter
+import com.example.templechen.videoshaderdemo.filter.*
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -39,7 +36,8 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
 //        filter = BaseFilter(context, mOESTextureId)
 //        filter = GrayFilter(context, mOESTextureId)
 //        filter = FourPartFilter(context, mOESTextureId)
-        filter = WaterMarkFilter(context, mOESTextureId)
+//        filter = WaterMarkFilter(context, mOESTextureId)
+        filter = BrightnessFilter(context, mOESTextureId)
         filter.initProgram()
     }
 
