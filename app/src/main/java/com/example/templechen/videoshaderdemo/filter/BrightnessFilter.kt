@@ -12,6 +12,7 @@ class BrightnessFilter(context: Context, oesTextureId: Int) : BaseFilter(context
     }
 
     private var uBrightnessLocation = -1
+    private var brightness = 0.5f
 
     override fun initProgram() {
         vertexShader = GLUtils.loadShader(
@@ -27,7 +28,7 @@ class BrightnessFilter(context: Context, oesTextureId: Int) : BaseFilter(context
 
     override fun drawFrame() {
         uBrightnessLocation = GLES20.glGetUniformLocation(program, uBrightness)
-        GLES20.glUniform1f(uBrightnessLocation, 0.5f)
+        GLES20.glUniform1f(uBrightnessLocation, brightness)
         super.drawFrame()
     }
 }
