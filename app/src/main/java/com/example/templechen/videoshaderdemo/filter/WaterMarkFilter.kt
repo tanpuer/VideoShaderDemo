@@ -2,6 +2,7 @@ package com.example.templechen.videoshaderdemo.filter
 
 import android.content.Context
 import android.opengl.GLES20
+import android.util.Log
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.R
 import java.nio.FloatBuffer
@@ -29,7 +30,7 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
 
     override fun initProgram() {
         super.initProgram()
-        waterMarkTextureId = GLUtils.loadTexture(context, R.mipmap.ic_launcher_round)
+        waterMarkTextureId = GLUtils.loadTexture(context, R.drawable.drawer_amino_logo)
         waterMarkFloatBuffer = GLUtils.createBuffer(GLUtils.waterMarkVertexData)
         waterMarkVertexShader = GLUtils.loadShader(GLES20.GL_VERTEX_SHADER, GLUtils.readShaderFromResource(context, R.raw.water_mark_vertex_shader))
         waterMarkFragmentShader = GLUtils.loadShader(GLES20.GL_FRAGMENT_SHADER, GLUtils.readShaderFromResource(context, R.raw.water_mark_fragment_shader))
@@ -46,7 +47,7 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
         aWaterMarkTextureCoordLocation = GLES20.glGetAttribLocation(waterMarkProgram, aWaterMarkTextureCoord)
         uWaterMarkTextureSamplerLocation = GLES20.glGetUniformLocation(waterMarkProgram, uWaterMarkTextureSampler)
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, waterMarkTextureId)
 
         GLES20.glUniform1i(uWaterMarkTextureSamplerLocation, 0)
