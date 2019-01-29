@@ -35,7 +35,7 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-//        mOESTextureId = GLUtils.createOESTextureObject()
+        mOESTextureId = GLUtils.createOESTextureObject()
 //        filter = BaseFilter(context, mOESTextureId)
 //        filter = GrayFilter(context, mOESTextureId)
 //        filter = FourPartFilter(context, mOESTextureId)
