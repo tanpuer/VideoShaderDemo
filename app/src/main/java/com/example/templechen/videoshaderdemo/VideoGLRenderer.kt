@@ -37,7 +37,8 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
 //        filter = GrayFilter(context, mOESTextureId)
 //        filter = FourPartFilter(context, mOESTextureId)
 //        filter = WaterMarkFilter(context, mOESTextureId)
-        filter = BrightnessFilter(context, mOESTextureId)
+//        filter = BrightnessFilter(context, mOESTextureId)
+        filter = GlassSphereFilter(context, mOESTextureId)
         filter.initProgram()
     }
 
