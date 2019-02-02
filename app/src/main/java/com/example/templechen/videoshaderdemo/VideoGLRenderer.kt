@@ -40,8 +40,9 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
 //        filter = BrightnessFilter(context, mOESTextureId)
 //        filter = GlassSphereFilter(context, mOESTextureId)
 //        filter = ZoomBlurFilter(context, mOESTextureId)
-        filter = VibranceFilter(context, mOESTextureId)
+//        filter = VibranceFilter(context, mOESTextureId)
 //        filter = TransformFilter(context, mOESTextureId)
+        filter = SwirlFilter(context, mOESTextureId)
         filter.initProgram()
     }
 
