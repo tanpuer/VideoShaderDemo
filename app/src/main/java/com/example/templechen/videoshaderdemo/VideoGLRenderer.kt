@@ -39,7 +39,8 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
 //        filter = WaterMarkFilter(context, mOESTextureId)
 //        filter = BrightnessFilter(context, mOESTextureId)
 //        filter = GlassSphereFilter(context, mOESTextureId)
-        filter = ZoomBlurFilter(context, mOESTextureId)
+//        filter = ZoomBlurFilter(context, mOESTextureId)
+        filter = VibranceFilter(context, mOESTextureId)
         filter.initProgram()
     }
 
