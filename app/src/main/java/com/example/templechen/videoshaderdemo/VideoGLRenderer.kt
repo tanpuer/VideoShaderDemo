@@ -43,7 +43,8 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
 //        filter = VibranceFilter(context, mOESTextureId)
 //        filter = TransformFilter(context, mOESTextureId)
 //        filter = SwirlFilter(context, mOESTextureId)
-        filter = PixelationFilter(context, mOESTextureId)
+//        filter = PixelationFilter(context, mOESTextureId)
+        filter = GaussianBlurFilter(context, mOESTextureId)
         filter.initProgram()
     }
 
