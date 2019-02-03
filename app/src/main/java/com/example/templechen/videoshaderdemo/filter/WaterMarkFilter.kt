@@ -1,7 +1,7 @@
 package com.example.templechen.videoshaderdemo.filter
 
 import android.content.Context
-import android.opengl.GLES20
+import android.opengl.GLES30
 import android.util.Log
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.R
@@ -32,39 +32,39 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
         super.initProgram()
         waterMarkTextureId = GLUtils.loadTexture(context, R.drawable.drawer_amino_logo)
         waterMarkFloatBuffer = GLUtils.createBuffer(GLUtils.waterMarkVertexData)
-        waterMarkVertexShader = GLUtils.loadShader(GLES20.GL_VERTEX_SHADER, GLUtils.readShaderFromResource(context, R.raw.water_mark_vertex_shader))
-        waterMarkFragmentShader = GLUtils.loadShader(GLES20.GL_FRAGMENT_SHADER, GLUtils.readShaderFromResource(context, R.raw.water_mark_fragment_shader))
+        waterMarkVertexShader = GLUtils.loadShader(GLES30.GL_VERTEX_SHADER, GLUtils.readShaderFromResource(context, R.raw.water_mark_vertex_shader))
+        waterMarkFragmentShader = GLUtils.loadShader(GLES30.GL_FRAGMENT_SHADER, GLUtils.readShaderFromResource(context, R.raw.water_mark_fragment_shader))
         waterMarkProgram = GLUtils.createProgram(waterMarkVertexShader, waterMarkFragmentShader)
     }
 
     override fun drawFrame() {
         super.drawFrame()
 
-        GLES20.glUseProgram(waterMarkProgram)
+        GLES30.glUseProgram(waterMarkProgram)
         //water mark
-        aWaterMarkPositionLocation = GLES20.glGetAttribLocation(waterMarkProgram, aWaterMarkPosition)
-        uWaterMarkMatrixLocation = GLES20.glGetUniformLocation(waterMarkProgram, uWaterMarkMatrix)
-        aWaterMarkTextureCoordLocation = GLES20.glGetAttribLocation(waterMarkProgram, aWaterMarkTextureCoord)
-        uWaterMarkTextureSamplerLocation = GLES20.glGetUniformLocation(waterMarkProgram, uWaterMarkTextureSampler)
+        aWaterMarkPositionLocation = GLES30.glGetAttribLocation(waterMarkProgram, aWaterMarkPosition)
+        uWaterMarkMatrixLocation = GLES30.glGetUniformLocation(waterMarkProgram, uWaterMarkMatrix)
+        aWaterMarkTextureCoordLocation = GLES30.glGetAttribLocation(waterMarkProgram, aWaterMarkTextureCoord)
+        uWaterMarkTextureSamplerLocation = GLES30.glGetUniformLocation(waterMarkProgram, uWaterMarkTextureSampler)
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, waterMarkTextureId)
+        GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, waterMarkTextureId)
 
-        GLES20.glUniform1i(uWaterMarkTextureSamplerLocation, 0)
-        GLES20.glUniformMatrix4fv(uWaterMarkMatrixLocation, 1, false, transformMatrix, 0)
+        GLES30.glUniform1i(uWaterMarkTextureSamplerLocation, 0)
+        GLES30.glUniformMatrix4fv(uWaterMarkMatrixLocation, 1, false, transformMatrix, 0)
 
         waterMarkFloatBuffer.position(0)
-        GLES20.glEnableVertexAttribArray(aWaterMarkPositionLocation)
-        GLES20.glVertexAttribPointer(aWaterMarkPositionLocation, 2, GLES20.GL_FLOAT, false, 16, waterMarkFloatBuffer)
+        GLES30.glEnableVertexAttribArray(aWaterMarkPositionLocation)
+        GLES30.glVertexAttribPointer(aWaterMarkPositionLocation, 2, GLES30.GL_FLOAT, false, 16, waterMarkFloatBuffer)
         waterMarkFloatBuffer.position(2)
-        GLES20.glEnableVertexAttribArray(aWaterMarkTextureCoordLocation)
-        GLES20.glVertexAttribPointer(aWaterMarkTextureCoordLocation, 2, GLES20.GL_FLOAT, false, 16, waterMarkFloatBuffer)
+        GLES30.glEnableVertexAttribArray(aWaterMarkTextureCoordLocation)
+        GLES30.glVertexAttribPointer(aWaterMarkTextureCoordLocation, 2, GLES30.GL_FLOAT, false, 16, waterMarkFloatBuffer)
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6)
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6)
 
-        GLES20.glDisableVertexAttribArray(aWaterMarkPositionLocation)
-        GLES20.glDisableVertexAttribArray(aWaterMarkTextureCoordLocation)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+        GLES30.glDisableVertexAttribArray(aWaterMarkPositionLocation)
+        GLES30.glDisableVertexAttribArray(aWaterMarkTextureCoordLocation)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
 
     }
 }

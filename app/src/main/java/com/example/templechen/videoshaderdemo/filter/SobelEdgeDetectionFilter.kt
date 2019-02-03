@@ -1,7 +1,7 @@
 package com.example.templechen.videoshaderdemo.filter
 
 import android.content.Context
-import android.opengl.GLES20
+import android.opengl.GLES30
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.R
 
@@ -20,21 +20,21 @@ class SobelEdgeDetectionFilter(context: Context, oesTextureId: Int) : BaseFilter
 
     override fun initProgram() {
         vertexShader = GLUtils.loadShader(
-            GLES20.GL_VERTEX_SHADER,
+            GLES30.GL_VERTEX_SHADER,
             GLUtils.readShaderFromResource(context, R.raw.three_x_three_texture_sampling_vertex_shader)
         )
         fragmentShader = GLUtils.loadShader(
-            GLES20.GL_FRAGMENT_SHADER,
+            GLES30.GL_FRAGMENT_SHADER,
             GLUtils.readShaderFromResource(context, R.raw.sobel_edge_detection_fragment_shader)
         )
         program = GLUtils.createProgram(vertexShader, fragmentShader)
     }
 
     override fun drawFrame() {
-        uTexelWidthLocation = GLES20.glGetUniformLocation(program, uTexelWidth)
-        GLES20.glUniform1f(uTexelHeightLocation, texelWidth)
-        uTexelHeightLocation = GLES20.glGetUniformLocation(program, uTexelHeight)
-        GLES20.glUniform1f(uTexelHeightLocation, texelHeight)
+        uTexelWidthLocation = GLES30.glGetUniformLocation(program, uTexelWidth)
+        GLES30.glUniform1f(uTexelHeightLocation, texelWidth)
+        uTexelHeightLocation = GLES30.glGetUniformLocation(program, uTexelHeight)
+        GLES30.glUniform1f(uTexelHeightLocation, texelHeight)
         super.drawFrame()
     }
 }

@@ -13,7 +13,7 @@ class VideoGLSurfaceView : GLSurfaceView {
     private lateinit var videoGlRenderer: VideoGLRenderer
 
     fun init(context: Context, isPreviewStarted: Boolean) {
-        setEGLContextClientVersion(2)
+        setEGLContextClientVersion(3)
         videoGlRenderer = VideoGLRenderer()
         videoGlRenderer.init(context, this, isPreviewStarted)
         setRenderer(videoGlRenderer)

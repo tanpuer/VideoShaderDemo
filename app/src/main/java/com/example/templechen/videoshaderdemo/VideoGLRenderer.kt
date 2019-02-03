@@ -2,7 +2,7 @@ package com.example.templechen.videoshaderdemo
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20
+import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import android.os.Handler
 import android.os.Looper
@@ -51,9 +51,9 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-        GLES20.glViewport(0, 0, width, height)
-        GLES20.glEnable(GLES20.GL_BLEND)
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+        GLES30.glViewport(0, 0, width, height)
+        GLES30.glEnable(GLES30.GL_BLEND)
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
     }
 
     override fun onDrawFrame(gl: GL10?) {
@@ -64,7 +64,7 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
         mSurfaceTexture.updateTexImage()
         mSurfaceTexture.getTransformMatrix(transformMatrix)
         filter.transformMatrix = transformMatrix
-        GLES20.glClearColor(0f, 0f, 0f, 0f)
+        GLES30.glClearColor(0f, 0f, 0f, 0f)
         filter.drawFrame()
     }
 

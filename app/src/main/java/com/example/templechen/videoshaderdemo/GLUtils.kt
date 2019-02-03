@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory
 import android.opengl.GLES10
 import android.opengl.GLES11
 import android.opengl.GLES11Ext
-import android.opengl.GLES20
+import android.opengl.GLES30
 import android.opengl.GLUtils
 import android.util.Log
 import java.io.BufferedReader
@@ -25,13 +25,13 @@ class GLUtils {
 
         fun createOESTextureObject(): Int {
             var tex = IntArray(1)
-            GLES20.glGenTextures(1, tex, 0)
-            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, tex[0])
-            GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
-            GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST)
-            GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
-            GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
-            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
+            GLES30.glGenTextures(1, tex, 0)
+            GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, tex[0])
+            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR)
+            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST)
+            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE)
+            GLES30.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE)
+            GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
             return tex[0]
         }
 
@@ -69,34 +69,34 @@ class GLUtils {
         }
 
         fun loadShader(type: Int, shaderSource: String): Int {
-            val shader = GLES20.glCreateShader(type)
+            val shader = GLES30.glCreateShader(type)
             if (shader == 0) {
                 throw RuntimeException("create shader failed $type")
             }
-            GLES20.glShaderSource(shader, shaderSource)
-            GLES20.glCompileShader(shader)
+            GLES30.glShaderSource(shader, shaderSource)
+            GLES30.glCompileShader(shader)
             val compiled = intArrayOf(0)
-            GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0)
-            if (compiled[0] == GLES20.GL_FALSE) {
-                Log.e("Shader Compile Error: ", GLES20.glGetShaderInfoLog(shader))
-                GLES20.glDeleteShader(shader)
+            GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compiled, 0)
+            if (compiled[0] == GLES30.GL_FALSE) {
+                Log.e("Shader Compile Error: ", GLES30.glGetShaderInfoLog(shader))
+                GLES30.glDeleteShader(shader)
             }
             return shader
         }
 
         fun createProgram(vertexShader: Int, fragmentShader: Int): Int {
-            val program = GLES20.glCreateProgram()
+            val program = GLES30.glCreateProgram()
             if (program == 0) {
                 throw RuntimeException("create gl program failed")
             }
-            GLES20.glAttachShader(program, vertexShader)
-            GLES20.glAttachShader(program, fragmentShader)
-            GLES20.glLinkProgram(program)
+            GLES30.glAttachShader(program, vertexShader)
+            GLES30.glAttachShader(program, fragmentShader)
+            GLES30.glLinkProgram(program)
             val compiled = IntArray(1)
-            GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, compiled, 0)
-            if (compiled[0] == GLES20.GL_FALSE) {
-                Log.e("Program Link Error: ", GLES20.glGetProgramInfoLog(program));
-                GLES20.glDeleteProgram(program)
+            GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, compiled, 0)
+            if (compiled[0] == GLES30.GL_FALSE) {
+                Log.e("Program Link Error: ", GLES30.glGetProgramInfoLog(program));
+                GLES30.glDeleteProgram(program)
             }
             return program
         }
@@ -112,7 +112,7 @@ class GLUtils {
 
         fun loadTexture(context: Context, resId: Int) :Int{
             val textureObjectIds = IntArray(1)
-            GLES20.glGenTextures(1, textureObjectIds, 0)
+            GLES30.glGenTextures(1, textureObjectIds, 0)
             if (textureObjectIds[0] ==0){
                 return 0
             }
@@ -120,16 +120,16 @@ class GLUtils {
             options.inScaled = false
             val bitmap = BitmapFactory.decodeResource(context.resources, resId, options)
             if (bitmap == null){
-                GLES20.glDeleteTextures(1, textureObjectIds, 0)
+                GLES30.glDeleteTextures(1, textureObjectIds, 0)
                 return 0
             }
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureObjectIds[0])
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR)
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
-            GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D)
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureObjectIds[0])
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR)
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR_MIPMAP_LINEAR)
+            GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bitmap, 0)
+            GLES30.glGenerateMipmap(GLES30.GL_TEXTURE_2D)
             bitmap.recycle()
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
             return textureObjectIds[0]
         }
 
