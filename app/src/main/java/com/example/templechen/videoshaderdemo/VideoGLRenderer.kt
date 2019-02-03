@@ -45,7 +45,8 @@ class VideoGLRenderer : GLSurfaceView.Renderer {
 //        filter = SwirlFilter(context, mOESTextureId)
 //        filter = PixelationFilter(context, mOESTextureId)
 //        filter = GaussianBlurFilter(context, mOESTextureId)
-        filter = SketchFilter(context, mOESTextureId)
+//        filter = SketchFilter(context, mOESTextureId)
+        filter = SobelEdgeDetectionFilter(context, mOESTextureId)
         filter.initProgram()
     }
 
