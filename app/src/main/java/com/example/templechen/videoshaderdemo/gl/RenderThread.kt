@@ -154,6 +154,26 @@ class RenderThread(
             shutDown()
             return
         }
+
+        //update fps
+        val NUM_FRAMES = 120
+        val ONE_TRILLION = 1000000000000L
+        if (mFpsCountStartNanos == 0L) {
+            mFpsCountStartNanos = timestampsNanos
+            mFpsCountFrame = 0
+        } else {
+            mFpsCountFrame++
+            if (mFpsCountFrame == NUM_FRAMES) {
+                // compute thousands of frames per second
+                val elapsed = timestampsNanos - mFpsCountStartNanos
+                mActivityHandler.sendFpsUpdate((NUM_FRAMES * ONE_TRILLION / elapsed).toInt(), mDroppedFrames)
+                // reset
+                mFpsCountStartNanos = timestampsNanos
+                mFpsCountFrame = 0
+            }
+        }
+
+
     }
 
     fun shutDown() {

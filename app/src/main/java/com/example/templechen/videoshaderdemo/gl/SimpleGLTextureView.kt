@@ -9,9 +9,10 @@ import android.view.TextureView
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class SimpleGLTextureView(context: Context, player: ExoPlayerTool) : TextureView(context), TextureView.SurfaceTextureListener, Choreographer.FrameCallback{
+class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandler: ActivityHandler) :
+    TextureView(context), TextureView.SurfaceTextureListener, Choreographer.FrameCallback {
 
-    private var activityHandler: ActivityHandler = ActivityHandler(context as Activity)
+    private var mActivityHandler = activityHandler
     private var mPlayer = player
     private var renderThread: RenderThread? = null
 
@@ -21,7 +22,13 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool) : TextureView
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
         renderThread =
-                RenderThread(context, Surface(surface), activityHandler, GLUtils.getDisplayRefreshNsec(context as Activity), mPlayer)
+                RenderThread(
+                    context,
+                    Surface(surface),
+                    mActivityHandler,
+                    GLUtils.getDisplayRefreshNsec(context as Activity),
+                    mPlayer
+                )
         renderThread?.start()
         renderThread?.waitUtilReady()
         val renderHandler = renderThread?.mHandler

@@ -8,10 +8,11 @@ import android.view.SurfaceView
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool) : SurfaceView(context), SurfaceHolder.Callback,
+class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandler: ActivityHandler) :
+    SurfaceView(context), SurfaceHolder.Callback,
     Choreographer.FrameCallback {
 
-    private var activityHandler: ActivityHandler = ActivityHandler(context as Activity)
+    private var mActivityHandler = activityHandler
     private var mPlayer = player
     private var renderThread: RenderThread? = null
 
@@ -21,7 +22,13 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool) : SurfaceView
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
         renderThread =
-                RenderThread(context, holder!!.surface, activityHandler, GLUtils.getDisplayRefreshNsec(context as Activity), mPlayer)
+                RenderThread(
+                    context,
+                    holder!!.surface,
+                    mActivityHandler,
+                    GLUtils.getDisplayRefreshNsec(context as Activity),
+                    mPlayer
+                )
         renderThread?.start()
         renderThread?.waitUtilReady()
         val renderHandler = renderThread?.mHandler

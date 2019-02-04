@@ -31,7 +31,10 @@ class ActivityHandler(context: Activity) : Handler() {
         }
         when (what) {
             MSG_GLES_VERSION -> print(what)
-            MSG_UPDATE_FPS -> print(what)
+            MSG_UPDATE_FPS -> {
+                (activity as SimpleGLActivity).updateFps(msg.arg1, msg.arg2)
+
+            }
             else -> throw IllegalArgumentException()
         }
     }
