@@ -21,6 +21,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     private lateinit var mPlayer: ExoPlayerTool
     private lateinit var mActivityHandler: ActivityHandler
     private lateinit var fpsView: TextView
+    private lateinit var glVersionView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +51,17 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         fpsView.setTextColor(Color.BLACK)
         fpsViewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
         parentView.addView(fpsView, fpsViewParams)
+
+        //glVersion view
+        glVersionView = TextView(this)
+        val glVersionViewParams =
+            RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        glVersionView.textSize = 16f
+        glVersionView.setTextColor(Color.BLACK)
+        //貌似不生效啊
+//        glVersionViewParams.addRule(RelativeLayout.BELOW, fpsView.id)
+        glVersionViewParams.topMargin = 100
+        parentView.addView(glVersionView, glVersionViewParams)
     }
 
     override fun onVideoSizeChanged(
@@ -82,14 +94,10 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     }
 
     fun updateFps(tfps: Int, dropped: Int) {
-        val builder = StringBuilder()
-        builder.append("Frame rate: ")
-            .append(tfps/1000.0f)
-            .append("fps")
-            .append("(")
-            .append(dropped)
-            .append(" dropped)")
-        Log.d(TAG, builder.toString())
-        fpsView.text = builder.toString()
+        fpsView.text = "Frame rate: ${tfps / 1000.0f}fps (${dropped} dropped)"
+    }
+
+    fun updateGLVersion(version: Int) {
+        glVersionView.text = "GLES Version: ${version}"
     }
 }
