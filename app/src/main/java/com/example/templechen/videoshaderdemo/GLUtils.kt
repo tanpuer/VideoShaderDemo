@@ -1,13 +1,12 @@
 package com.example.templechen.videoshaderdemo
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.opengl.GLES10
-import android.opengl.GLES11
-import android.opengl.GLES11Ext
-import android.opengl.GLES30
+import android.opengl.*
 import android.opengl.GLUtils
 import android.util.Log
+import android.view.WindowManager
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -141,6 +140,26 @@ class GLUtils {
             0.7f, 0.7f, 0f, 0f,
             1.0f, 0.7f, 1f, 0f
         )
+
+        fun getDisplayRefreshNsec(activity: Activity): Long {
+            val display = (activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
+            val displayFps = display.refreshRate.toDouble()
+            val refreshNs = Math.round(1000000000L / displayFps)
+            Log.d("getDisplayRefreshNsec", "refresh rate is $displayFps fps --> $refreshNs ns")
+            return refreshNs
+        }
+
+        /**
+         * Checks to see if a GLES error has been raised.
+         */
+        fun checkGlError(op: String) {
+            val error = GLES20.glGetError()
+            if (error != GLES20.GL_NO_ERROR) {
+                val msg = op + ": glError 0x" + Integer.toHexString(error)
+                Log.e("checkGlError", msg)
+//                throw RuntimeException(msg)
+            }
+        }
 
     }
 
