@@ -2,7 +2,7 @@ package com.example.templechen.videoshaderdemo.gl
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20
+import android.opengl.GLES30
 import android.opengl.Matrix
 import android.os.Looper
 import android.util.Log
@@ -11,7 +11,10 @@ import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.filter.*
 import com.example.templechen.videoshaderdemo.gl.egl.EglCore
 import com.example.templechen.videoshaderdemo.gl.egl.WindowSurface
+import com.example.templechen.videoshaderdemo.gl.encoder.VideoEncoder
+import com.example.templechen.videoshaderdemo.gl.encoder.VideoEncoderThread
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
+import java.io.File
 
 class RenderThread(
     context: Context,
@@ -40,9 +43,6 @@ class RenderThread(
     private lateinit var mWindowSurface: WindowSurface
     private var mDisplayProjectionMatrix = FloatArray(16) { 0f }
 
-    // Previous frame time.
-    private var mPrevTimeNanos: Long = 0
-
     // FPS / drop counter.
     private var mRefreshPeriodNanos: Long = 0
     private var mFpsCountStartNanos: Long = 0
@@ -54,6 +54,14 @@ class RenderThread(
     private lateinit var filter: BaseFilter
     private var mOESTextureId: Int = -1
     private lateinit var mSurfaceTexture: SurfaceTexture
+
+    //recording
+    private var mOffscreenTexture = -1
+    private var mFramebuffer = -1
+    private var mDepthBuffer = -1
+    private var recordingEnable = false
+    private lateinit var mInputWindowSurface: WindowSurface
+    private lateinit var mVideoEncoderThread: VideoEncoderThread
 
     override fun run() {
         Looper.prepare()
@@ -103,28 +111,99 @@ class RenderThread(
         mPlayer.setVideoSurface(Surface(mSurfaceTexture))
         mPlayer.setPlayWhenReady(true)
 
-        GLES20.glClearColor(0f, 0f, 0f, 1f)
-        GLES20.glDisable(GLES20.GL_DEPTH_TEST)
-        GLES20.glDisable(GLES20.GL_CULL_FACE)
-        GLES20.glEnable(GLES20.GL_BLEND)
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+        GLES30.glClearColor(0f, 0f, 0f, 1f)
+        GLES30.glDisable(GLES30.GL_DEPTH_TEST)
+        GLES30.glDisable(GLES30.GL_CULL_FACE)
+        GLES30.glEnable(GLES30.GL_BLEND)
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
         mActivityHandler.sendGLESVersion(mEglCore.glVersion)
     }
 
     fun surfaceChanged(width: Int, height: Int) {
         Log.d(TAG, "surfaceChanged " + width + "x" + height)
-        prepareFrameBuffer()
-        GLES20.glViewport(0, 0, width, height)
+//        prepareFrameBuffer(width, height)
+        GLES30.glViewport(0, 0, width, height)
         Matrix.orthoM(mDisplayProjectionMatrix, 0, 0f, width.toFloat(), 0f, height.toFloat(), -1f, 1f)
-
     }
 
     /**
      * Prepares the off-screen framebuffer.
      */
-    private fun prepareFrameBuffer() {
+    private fun prepareFrameBuffer(width: Int, height: Int) {
         GLUtils.checkGlError("prepareFramebuffer start")
-        //todo
+        val values = intArrayOf(0)
+        //create a texture object and bind it. This will be the color buffer
+        GLES30.glGenTextures(1, values, 0)
+        GLUtils.checkGlError("glGenTextures")
+        mOffscreenTexture = values[0]
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, mOffscreenTexture)
+        GLUtils.checkGlError("glBindTexture $mOffscreenTexture")
+        //create texture storage
+        GLES30.glTexImage2D(
+            GLES30.GL_TEXTURE_2D,
+            0,
+            GLES30.GL_RGBA,
+            width,
+            height,
+            0,
+            GLES30.GL_RGBA,
+            GLES30.GL_UNSIGNED_BYTE,
+            null
+        )
+        GLES30.glTexParameteri(
+            GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER,
+            GLES30.GL_NEAREST
+        )
+        GLES30.glTexParameteri(
+            GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER,
+            GLES30.GL_LINEAR
+        )
+        GLES30.glTexParameteri(
+            GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S,
+            GLES30.GL_CLAMP_TO_EDGE
+        )
+        GLES30.glTexParameteri(
+            GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T,
+            GLES30.GL_CLAMP_TO_EDGE
+        )
+
+        //create framebuffer and bind it
+        GLES30.glGenFramebuffers(1, values, 0)
+        mFramebuffer = values[0]
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, mFramebuffer)
+        GLUtils.checkGlError("glBindFramebuffer $mFramebuffer")
+
+        //create a depth buffer and bind it
+        GLES30.glGenRenderbuffers(1, values, 0)
+        mDepthBuffer = values[0]
+        GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, mDepthBuffer)
+        //allocate storage for the depth buffer
+        GLES30.glRenderbufferStorage(GLES30.GL_RENDERBUFFER, GLES30.GL_DEPTH_COMPONENT16, width, height)
+
+        //attach the depth buffer and the texture(color buffer) to the framebuffer object
+        GLES30.glFramebufferRenderbuffer(
+            GLES30.GL_FRAMEBUFFER,
+            GLES30.GL_DEPTH_ATTACHMENT,
+            GLES30.GL_RENDERBUFFER,
+            mDepthBuffer
+        )
+        GLES30.glFramebufferTexture2D(
+            GLES30.GL_FRAMEBUFFER,
+            GLES30.GL_COLOR_ATTACHMENT0,
+            GLES30.GL_TEXTURE_2D,
+            mOffscreenTexture,
+            0
+        )
+
+        //see if GLES is happy with all this
+        val status = GLES30.glCheckFramebufferStatus(GLES30.GL_FRAMEBUFFER)
+        if (status != GLES30.GL_FRAMEBUFFER_COMPLETE) {
+            throw RuntimeException("Framebuffer not complete, status=$status")
+        }
+
+        //switch back to the default framebuffer
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0)
+        GLUtils.checkGlError("prepareFramebuffer done")
     }
 
     /**
@@ -145,8 +224,37 @@ class RenderThread(
             return
         }
 
-        // Render the scene, swap back to front.
+        // Render
         draw()
+
+        //recording
+        if (recordingEnable) {
+            mVideoEncoderThread.frameAvailableSoon()
+            mInputWindowSurface.makeCurrentReadFrom(mWindowSurface)
+            GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+            GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
+            GLES30.glBlitFramebuffer(
+                0,
+                0,
+                mWindowSurface.width,
+                mWindowSurface.height,
+                0,
+                0,
+                mWindowSurface.width,
+                mWindowSurface.height,
+                GLES30.GL_COLOR_BUFFER_BIT,
+                GLES30.GL_NEAREST
+            )
+            val err = GLES30.glGetError()
+            if (err != GLES30.GL_NO_ERROR) {
+                Log.w(TAG, "ERROR: glBlitFramebuffer failed: 0x" + Integer.toHexString(err))
+            }
+            mInputWindowSurface.setPresentationTime(timestampsNanos)
+            mInputWindowSurface.swapBuffers()
+
+            mWindowSurface.makeCurrent()
+        }
+
         val swapResult: Boolean = mWindowSurface.swapBuffers()
 
         if (!swapResult) {
@@ -181,9 +289,50 @@ class RenderThread(
         Looper.myLooper()?.quit()
     }
 
+    fun startEncoder() {
+        val BIT_RATE = 4000000
+        val WIDTH = mWindowSurface.width
+        val HEIGHT = mWindowSurface.height
+        var outputFile = File(mContext.cacheDir, "gltest.mp4")
+        if (outputFile.exists()) {
+            outputFile.delete()
+            outputFile = File(mContext.cacheDir, "gltest.mp4")
+        }
+        val encoder = VideoEncoder(WIDTH, HEIGHT, BIT_RATE, outputFile)
+        mInputWindowSurface = WindowSurface(mEglCore, encoder.mInputSurface, true)
+        mVideoEncoderThread = VideoEncoderThread(encoder)
+        mVideoEncoderThread.start()
+        mVideoEncoderThread.waitUntilReady()
+        recordingEnable = true
+    }
+
+    fun stopEncoder() {
+        recordingEnable = false
+        mVideoEncoderThread.stopRecording()
+        mInputWindowSurface.release()
+//        mVideoEncoderThread.join()
+    }
+
     private fun releaseGL() {
         GLUtils.checkGlError("releaseGl start")
         mWindowSurface.release()
+        val values = intArrayOf(0)
+        if (mOffscreenTexture > 0) {
+            values[0] = mOffscreenTexture
+            GLES30.glDeleteTextures(1, values, 0)
+            mOffscreenTexture = -1
+        }
+        if (mFramebuffer > 0) {
+            values[0] = mFramebuffer
+            GLES30.glDeleteFramebuffers(1, values, 0)
+            mFramebuffer = -1
+        }
+        if (mDepthBuffer > 0) {
+            values[0] = mDepthBuffer
+            GLES30.glDeleteRenderbuffers(1, values, 0)
+            mDepthBuffer = -1
+        }
+
         mEglCore.makeNothingCurrent()
     }
 
@@ -195,8 +344,8 @@ class RenderThread(
         GLUtils.checkGlError("draw start")
         // Clear to a non-black color to make the content easily differentiable from
         // the pillar-/letter-boxing.
-        GLES20.glClearColor(0f, 0f, 0f, 1.0f)
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        GLES30.glClearColor(0f, 0f, 0f, 1.0f)
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
 
         mSurfaceTexture.getTransformMatrix(filter.transformMatrix)
         mSurfaceTexture.updateTexImage()

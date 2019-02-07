@@ -11,9 +11,9 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         const val MSG_SURFACE_CREATED = 0
         const val MSG_SURFACE_CHANGED = 1
         const val MSG_DO_FRAME = 2
-        const val MSG_RECORDING_ENABLED = 3
-        const val MSG_RECORD_METHOD = 4
-        const val MSG_SHUTDOWN = 5
+        const val MSG_SHUTDOWN = 3
+        const val MSG_START_RECORD = 4
+        const val MSG_STOP_RECORD = 5
     }
 
     private var weakRenderThread: WeakReference<RenderThread> = WeakReference(renderThread)
@@ -46,30 +46,20 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
     }
 
     /**
-     * Enable or disable recording.
-     * <p>
-     * Call from non-UI thread.
-     */
-    fun setRecordingEnable(enable: Boolean) {
-        sendMessage(obtainMessage(MSG_RECORDING_ENABLED, if (enable) 1 else 0, 1))
-    }
-
-    /**
-     * Set the method used to render a frame for the encoder.
-     * <p>
-     * Call from non-UI thread.
-     */
-    fun setRecordMethod(method: Int) {
-        sendMessage(obtainMessage(MSG_RECORD_METHOD, method, 0))
-    }
-
-    /**
      * Sends the "shutdown" message, which tells the render thread to halt.
      * <p>
      * Call from UI thread.
      */
     fun sendShutDown() {
         sendMessage(obtainMessage(MSG_SHUTDOWN))
+    }
+
+    fun sendStartEncoder() {
+        sendMessage(obtainMessage(MSG_START_RECORD))
+    }
+
+    fun sendStopEncoder() {
+        sendMessage(obtainMessage(MSG_STOP_RECORD))
     }
 
     override fun handleMessage(msg: Message?) {
@@ -86,14 +76,14 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
                 val timestamp: Long = msg.arg1.toLong().shl(32).or(msg.arg2.toLong().and(0xffffffffL))
                 renderThread.doFrame(timestamp)
             }
-            MSG_RECORDING_ENABLED -> {
-
-            }
-            MSG_RECORD_METHOD -> {
-
-            }
             MSG_SHUTDOWN -> {
                 renderThread.shutDown()
+            }
+            MSG_START_RECORD -> {
+                renderThread.startEncoder()
+            }
+            MSG_STOP_RECORD -> {
+                renderThread.stopEncoder()
             }
             else -> throw IllegalArgumentException()
         }

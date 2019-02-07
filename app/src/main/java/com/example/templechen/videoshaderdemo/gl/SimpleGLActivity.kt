@@ -4,10 +4,13 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
+import java.io.File
 import java.lang.StringBuilder
 
 class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
@@ -22,6 +25,8 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     private lateinit var mActivityHandler: ActivityHandler
     private lateinit var fpsView: TextView
     private lateinit var glVersionView: TextView
+    private lateinit var startBtn: Button
+    private lateinit var stopBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +67,27 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 //        glVersionViewParams.addRule(RelativeLayout.BELOW, fpsView.id)
         glVersionViewParams.topMargin = 100
         parentView.addView(glVersionView, glVersionViewParams)
+
+        //start stop btn
+        startBtn = Button(this)
+        val startBtnLayoutParams = RelativeLayout.LayoutParams(300, 150)
+        startBtnLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+        startBtnLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        startBtn.text = "start"
+        parentView.addView(startBtn, startBtnLayoutParams)
+        startBtn.setOnClickListener {
+            simpleGLSurfaceView.startRecording()
+        }
+
+        stopBtn = Button(this)
+        val stopBtnLayoutParams = RelativeLayout.LayoutParams(300, 150)
+        stopBtnLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        stopBtnLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        stopBtn.text = "stop"
+        parentView.addView(stopBtn, stopBtnLayoutParams)
+        stopBtn.setOnClickListener {
+            simpleGLSurfaceView.stopRecording()
+        }
     }
 
     override fun onVideoSizeChanged(
@@ -100,4 +126,5 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     fun updateGLVersion(version: Int) {
         glVersionView.text = "GLES Version: ${version}"
     }
+
 }
