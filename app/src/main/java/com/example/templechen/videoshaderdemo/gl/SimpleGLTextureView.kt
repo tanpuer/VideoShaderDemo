@@ -59,5 +59,14 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandl
         renderHandler?.sendDoFrame(frameTimeNanos)
     }
 
+    fun startRecording() {
+        val renderHandler = renderThread?.mHandler
+        renderHandler?.sendStartEncoder()
+    }
+
+    fun stopRecording() {
+        val renderHandler = renderThread?.mHandler
+        renderHandler?.sendStopEncoder()
+    }
 
 }
