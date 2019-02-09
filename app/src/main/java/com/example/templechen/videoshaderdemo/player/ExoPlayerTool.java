@@ -143,6 +143,7 @@ public class ExoPlayerTool {
 
     public void release() {
         mExoPlayer.release();
+        mCache.release();
         mExoPlayerTool = null;
     }
 
