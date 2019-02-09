@@ -3,6 +3,7 @@ package com.example.templechen.videoshaderdemo.gl
 import android.app.Activity
 import android.content.Context
 import android.view.Choreographer
+import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.example.templechen.videoshaderdemo.GLUtils
@@ -15,19 +16,22 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandl
     private var mActivityHandler = activityHandler
     private var mPlayer = player
     private var renderThread: RenderThread? = null
+    private var mSurface: Surface? = null
 
     init {
         holder.addCallback(this)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
+        mSurface = holder?.surface
         renderThread =
                 RenderThread(
                     context,
                     holder!!.surface,
                     mActivityHandler,
                     GLUtils.getDisplayRefreshNsec(context as Activity),
-                    mPlayer
+                    mPlayer,
+                    "BaseFilter"
                 )
         renderThread?.start()
         renderThread?.waitUtilReady()
@@ -42,6 +46,7 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandl
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
+        mSurface = null
         val renderHandler = renderThread?.mHandler
         renderHandler?.sendShutDown()
         renderThread?.join()
@@ -63,6 +68,29 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandl
     fun stopRecording() {
         val renderHandler = renderThread?.mHandler
         renderHandler?.sendStopEncoder()
+    }
+
+    fun reCreateRenderThread(type: String) {
+        val renderHandler = renderThread?.mHandler
+        renderHandler?.sendShutDown()
+        renderThread?.join()
+        Choreographer.getInstance().removeFrameCallback(this)
+        if (mSurface != null) {
+            renderThread =
+                    RenderThread(
+                        context,
+                        mSurface!!,
+                        mActivityHandler,
+                        GLUtils.getDisplayRefreshNsec(context as Activity),
+                        mPlayer,
+                        type
+                    )
+            renderThread?.start()
+            renderThread?.waitUtilReady()
+            val renderHandler = renderThread?.mHandler
+            renderHandler?.sendSurfaceCreated()
+            Choreographer.getInstance().postFrameCallback(this)
+        }
     }
 
 }

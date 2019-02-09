@@ -3,15 +3,11 @@ package com.example.templechen.videoshaderdemo.gl
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
-import java.io.File
-import java.lang.StringBuilder
 
 class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
@@ -28,6 +24,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     private lateinit var startBtn: Button
     private lateinit var stopBtn: Button
     private var isRecording = false
+    private lateinit var changeFilterBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +87,15 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         stopBtn.setOnClickListener {
             isRecording = false
             simpleGLSurfaceView.stopRecording()
+        }
+
+        //change filter
+        changeFilterBtn = Button(this)
+        val changeFilterLayoutParams = RelativeLayout.LayoutParams(300, 150)
+        changeFilterLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+        parentView.addView(changeFilterBtn, changeFilterLayoutParams)
+        changeFilterBtn.setOnClickListener {
+            simpleGLSurfaceView.reCreateRenderThread("SketchFilter")
         }
     }
 

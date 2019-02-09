@@ -15,19 +15,22 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandl
     private var mActivityHandler = activityHandler
     private var mPlayer = player
     private var renderThread: RenderThread? = null
+    private var mSurface: Surface? = null
 
     init {
         surfaceTextureListener = this
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
+        mSurface = Surface(surface)
         renderThread =
                 RenderThread(
                     context,
-                    Surface(surface),
+                    mSurface!!,
                     mActivityHandler,
                     GLUtils.getDisplayRefreshNsec(context as Activity),
-                    mPlayer
+                    mPlayer,
+                    "BaseFilter"
                 )
         renderThread?.start()
         renderThread?.waitUtilReady()
@@ -45,6 +48,7 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandl
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+        mSurface = null
         val renderHandler = renderThread?.mHandler
         renderHandler?.sendShutDown()
         renderThread?.join()
@@ -67,6 +71,29 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandl
     fun stopRecording() {
         val renderHandler = renderThread?.mHandler
         renderHandler?.sendStopEncoder()
+    }
+
+    fun reCreateRenderThread() {
+        val renderHandler = renderThread?.mHandler
+        renderHandler?.sendShutDown()
+        renderThread?.join()
+        Choreographer.getInstance().removeFrameCallback(this)
+        if (mSurface != null) {
+            renderThread =
+                    RenderThread(
+                        context,
+                        mSurface!!,
+                        mActivityHandler,
+                        GLUtils.getDisplayRefreshNsec(context as Activity),
+                        mPlayer,
+                        "SketchFilter"
+                    )
+            renderThread?.start()
+            renderThread?.waitUtilReady()
+            val renderHandler = renderThread?.mHandler
+            renderHandler?.sendSurfaceCreated()
+            Choreographer.getInstance().postFrameCallback(this)
+        }
     }
 
 }
