@@ -4,13 +4,15 @@ import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
+import android.util.Log
 import android.view.Surface
 import java.io.File
 import java.lang.RuntimeException
 
-class VideoEncoder(val width: Int, val height: Int, val bitRate: Int, val outputFile: File) {
+class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: File) {
 
     companion object {
+        private const val TAG = "VideoEncoder"
         const val MIME_TYPE = "video/avc"
         const val FRAME_RATE = 30
         const val I_FRAME_INTERVAL = 10
@@ -54,7 +56,12 @@ class VideoEncoder(val width: Int, val height: Int, val bitRate: Int, val output
         while (true) {
             val encoderStatus = mEncoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC.toLong())
             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
-
+                // no output available yet
+                if (!endOfStream) {
+                    break     // out of while
+                } else {
+                    Log.d(TAG, "no output available, spinning to await EOS");
+                }
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
                 encoderOutputBuffers = mEncoder.outputBuffers
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
