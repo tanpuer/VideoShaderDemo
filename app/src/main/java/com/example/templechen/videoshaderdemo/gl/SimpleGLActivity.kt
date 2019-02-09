@@ -157,6 +157,11 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         mPlayer.setPlayWhenReady(true)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mPlayer.release()
+    }
+
     fun updateFps(tfps: Int, dropped: Int) {
         fpsView.text = "Frame rate: ${tfps / 1000.0f}fps (${dropped} dropped)"
     }

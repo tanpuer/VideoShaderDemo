@@ -84,7 +84,7 @@ public class ExoPlayerTool {
         return new LoopingMediaSource(mediaSource);
     }
 
-    public CacheDataSourceFactory createCacheDataSourceFactory(Uri uri, Context context) {
+    public DataSource.Factory createCacheDataSourceFactory(Uri uri, Context context) {
         DataSource.Factory dataSourceFactory;
         if (uri.getScheme().equals("asset") || uri.getScheme().equals("file")) {
             dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
@@ -97,24 +97,25 @@ public class ExoPlayerTool {
                             DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
                             true);
         }
-        return new CacheDataSourceFactory(
-                mCache,
-                dataSourceFactory,
-                new FileDataSourceFactory(),
-                new CacheDataSinkFactory(mCache, DEFAULT_MAX_CACHE_FILE_SIZE),
-                CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,
-                new CacheDataSource.EventListener() {
-                    @Override
-                    public void onCachedBytesRead(long cacheSizeBytes, long cachedBytesRead) {
-                        Log.d(TAG, "onCachedBytesRead: " + cacheSizeBytes);
-                    }
-
-                    @Override
-                    public void onCacheIgnored(int reason) {
-                        Log.d(TAG, "onCacheIgnored: " + reason);
-                    }
-                }
-        );
+        return dataSourceFactory;
+//        return new CacheDataSourceFactory(
+//                mCache,
+//                dataSourceFactory,
+//                new FileDataSourceFactory(),
+//                new CacheDataSinkFactory(mCache, DEFAULT_MAX_CACHE_FILE_SIZE),
+//                CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,
+//                new CacheDataSource.EventListener() {
+//                    @Override
+//                    public void onCachedBytesRead(long cacheSizeBytes, long cachedBytesRead) {
+//                        Log.d(TAG, "onCachedBytesRead: " + cacheSizeBytes);
+//                    }
+//
+//                    @Override
+//                    public void onCacheIgnored(int reason) {
+//                        Log.d(TAG, "onCacheIgnored: " + reason);
+//                    }
+//                }
+//        );
     }
 
     public void prepare(MediaSource mediaSource) {
