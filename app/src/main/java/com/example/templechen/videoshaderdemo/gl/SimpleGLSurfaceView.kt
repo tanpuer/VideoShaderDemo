@@ -71,7 +71,8 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandl
     }
 
     fun reCreateRenderThread(type: String) {
-        val renderHandler = renderThread?.mHandler
+        mPlayer.setPlayWhenReady(false)
+        var renderHandler = renderThread?.mHandler
         renderHandler?.sendShutDown()
         renderThread?.join()
         Choreographer.getInstance().removeFrameCallback(this)
@@ -87,7 +88,7 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandl
                     )
             renderThread?.start()
             renderThread?.waitUtilReady()
-            val renderHandler = renderThread?.mHandler
+            renderHandler = renderThread?.mHandler
             renderHandler?.sendSurfaceCreated()
             Choreographer.getInstance().postFrameCallback(this)
         }

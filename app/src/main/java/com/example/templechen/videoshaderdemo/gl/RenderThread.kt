@@ -361,7 +361,7 @@ class RenderThread(
             "WaterMarkFilter" -> filter = WaterMarkFilter(mContext, mOESTextureId)
             "BrightnessFilter" -> filter = BrightnessFilter(mContext, mOESTextureId)
             "GlassSphereFilter" -> filter = GlassSphereFilter(mContext, mOESTextureId)
-            "ZoomBlurFilter" -> ZoomBlurFilter(mContext, mOESTextureId)
+            "ZoomBlurFilter" -> filter = ZoomBlurFilter(mContext, mOESTextureId)
             "VibranceFilter" -> filter = VibranceFilter(mContext, mOESTextureId)
             "TransformFilter" -> filter = TransformFilter(mContext, mOESTextureId)
             "SwirlFilter" -> filter = SwirlFilter(mContext, mOESTextureId)

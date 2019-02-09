@@ -1,18 +1,40 @@
 package com.example.templechen.videoshaderdemo.gl
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.example.templechen.videoshaderdemo.R
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
 class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
     companion object {
         private const val TAG = "SimpleGLActivity"
+        private val LIST = listOf(
+            "BaseFilter",
+            "GrayFilter",
+            "FourPartFilter",
+            "WaterMarkFilter",
+            "BrightnessFilter",
+            "GlassSphereFilter",
+            "ZoomBlurFilter",
+            "VibranceFilter",
+            "TransformFilter",
+            "SwirlFilter",
+            "PixelationFilter",
+            "GaussianBlurFilter",
+            "SketchFilter",
+            "SobelEdgeDetectionFilter"
+        )
     }
 
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
@@ -24,7 +46,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     private lateinit var startBtn: Button
     private lateinit var stopBtn: Button
     private var isRecording = false
-    private lateinit var changeFilterBtn: Button
+    private lateinit var filterRecyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,14 +111,17 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
             simpleGLSurfaceView.stopRecording()
         }
 
-        //change filter
-        changeFilterBtn = Button(this)
-        val changeFilterLayoutParams = RelativeLayout.LayoutParams(300, 150)
-        changeFilterLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-        parentView.addView(changeFilterBtn, changeFilterLayoutParams)
-        changeFilterBtn.setOnClickListener {
-            simpleGLSurfaceView.reCreateRenderThread("SketchFilter")
-        }
+        //filter RecyclerView
+        filterRecyclerView = RecyclerView(this)
+        val filterLayoutParams =
+            RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        filterLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        filterLayoutParams.bottomMargin = 200
+        filterRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        filterRecyclerView.adapter = FilterAdapter(this, LIST)
+        filterRecyclerView.setBackgroundColor(Color.GRAY)
+        parentView.addView(filterRecyclerView, filterLayoutParams)
+
     }
 
     override fun onVideoSizeChanged(
@@ -138,6 +163,35 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
     fun updateGLVersion(version: Int) {
         glVersionView.text = "GLES Version: ${version}"
+    }
+
+    class FilterAdapter(context: Context, list: List<String>) : RecyclerView.Adapter<FilterAdapter.FilterViewHolder>() {
+
+        private var mList = list
+        private var mContext = context
+
+        override fun onCreateViewHolder(parent: ViewGroup, pos: Int): FilterViewHolder {
+            val view = LayoutInflater.from(mContext).inflate(R.layout.item_filter, parent, false)
+            return FilterViewHolder(view)
+        }
+
+        override fun getItemCount(): Int {
+            return mList.size
+        }
+
+        override fun onBindViewHolder(filterViewHolder: FilterViewHolder, pos: Int) {
+            filterViewHolder.textView.text = mList[pos]
+            filterViewHolder.textView.setOnClickListener {
+                (mContext as SimpleGLActivity).simpleGLSurfaceView.reCreateRenderThread(mList[pos])
+            }
+        }
+
+
+        class FilterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+            var textView: Button = itemView.findViewById(R.id.text)
+
+        }
     }
 
 }
