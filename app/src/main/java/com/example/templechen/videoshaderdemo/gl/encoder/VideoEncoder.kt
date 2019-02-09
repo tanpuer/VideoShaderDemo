@@ -52,7 +52,6 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
         if (endOfStream) {
             mEncoder.signalEndOfInputStream()
         }
-        var encoderOutputBuffers = mEncoder.outputBuffers
         while (true) {
             val encoderStatus = mEncoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC.toLong())
             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
@@ -60,10 +59,8 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
                 if (!endOfStream) {
                     break     // out of while
                 } else {
-                    Log.d(TAG, "no output available, spinning to await EOS");
+                    Log.d(TAG, "no output available, spinning to await EOS")
                 }
-            } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                encoderOutputBuffers = mEncoder.outputBuffers
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 if (mMuxerStarted) {
                     throw RuntimeException("format changed twice")
@@ -75,7 +72,7 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
             } else if (encoderStatus < 0) {
                 //ignore
             } else {
-                val encodedData = encoderOutputBuffers[encoderStatus]
+                val encodedData = mEncoder.getOutputBuffer(encoderStatus)
                 if (encodedData == null) {
                     throw RuntimeException("encoderOutputBuffer $encoderStatus is null")
                 }
