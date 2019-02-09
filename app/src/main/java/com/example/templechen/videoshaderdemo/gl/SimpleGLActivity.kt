@@ -27,6 +27,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     private lateinit var glVersionView: TextView
     private lateinit var startBtn: Button
     private lateinit var stopBtn: Button
+    private var isRecording = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +77,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         startBtn.text = "start"
         parentView.addView(startBtn, startBtnLayoutParams)
         startBtn.setOnClickListener {
+            isRecording = true
             simpleGLSurfaceView.startRecording()
         }
 
@@ -86,6 +88,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         stopBtn.text = "stop"
         parentView.addView(stopBtn, stopBtnLayoutParams)
         stopBtn.setOnClickListener {
+            isRecording = false
             simpleGLSurfaceView.stopRecording()
         }
     }
@@ -112,6 +115,10 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     override fun onPause() {
         super.onPause()
         mPlayer.setPlayWhenReady(false)
+        if (isRecording) {
+            isRecording = false
+            simpleGLSurfaceView.stopRecording()
+        }
     }
 
     override fun onResume() {
