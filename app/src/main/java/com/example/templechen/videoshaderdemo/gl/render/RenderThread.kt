@@ -20,7 +20,7 @@ import java.io.File
 class RenderThread(
     context: Context,
     surface: Surface,
-    activityHandler: ActivityHandler,
+    activityHandler: ActivityHandler?,
     refreshPeriodsNs: Long,
     player: ExoPlayerTool,
     type: String
@@ -120,7 +120,7 @@ class RenderThread(
         GLES30.glDisable(GLES30.GL_CULL_FACE)
         GLES30.glEnable(GLES30.GL_BLEND)
         GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
-        mActivityHandler.sendGLESVersion(mEglCore.glVersion)
+        mActivityHandler?.sendGLESVersion(mEglCore.glVersion)
     }
 
     fun surfaceChanged(width: Int, height: Int) {
@@ -293,7 +293,7 @@ class RenderThread(
             if (mFpsCountFrame == NUM_FRAMES) {
                 // compute thousands of frames per second
                 val elapsed = timestampsNanos - mFpsCountStartNanos
-                mActivityHandler.sendFpsUpdate((NUM_FRAMES * ONE_TRILLION / elapsed).toInt(), mDroppedFrames)
+                mActivityHandler?.sendFpsUpdate((NUM_FRAMES * ONE_TRILLION / elapsed).toInt(), mDroppedFrames)
                 // reset
                 mFpsCountStartNanos = timestampsNanos
                 mFpsCountFrame = 0

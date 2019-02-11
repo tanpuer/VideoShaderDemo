@@ -29,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PurePlayActivity"/>
+        <activity android:name="com.example.templechen.videoshaderdemo.gl.sticker.StickerActivity"/>
     </application>
 
 </manifest>

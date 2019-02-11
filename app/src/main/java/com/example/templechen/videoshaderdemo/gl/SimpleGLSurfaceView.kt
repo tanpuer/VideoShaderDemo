@@ -10,7 +10,7 @@ import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.gl.render.RenderThread
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandler: ActivityHandler) :
+class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandler: ActivityHandler?) :
     SurfaceView(context), SurfaceHolder.Callback,
     Choreographer.FrameCallback {
 
