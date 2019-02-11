@@ -75,4 +75,14 @@ open class BaseFilter {
         GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0)
     }
 
+    open fun release() {
+        GLES30.glDeleteProgram(program)
+        program = 0
+        GLES30.glDeleteShader(vertexShader)
+        vertexShader = 0
+        GLES30.glDeleteShader(fragmentShader)
+        fragmentShader = 0
+        floatBuffer.clear()
+    }
+
 }

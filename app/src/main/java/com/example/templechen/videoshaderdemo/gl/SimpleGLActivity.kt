@@ -13,28 +13,14 @@ import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.example.templechen.videoshaderdemo.R
+import com.example.templechen.videoshaderdemo.filter.FilterListUtil
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
 class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
     companion object {
         private const val TAG = "SimpleGLActivity"
-        private val LIST = listOf(
-            "BaseFilter",
-            "GrayFilter",
-            "FourPartFilter",
-            "WaterMarkFilter",
-            "BrightnessFilter",
-            "GlassSphereFilter",
-            "ZoomBlurFilter",
-            "VibranceFilter",
-            "TransformFilter",
-            "SwirlFilter",
-            "PixelationFilter",
-            "GaussianBlurFilter",
-            "SketchFilter",
-            "SobelEdgeDetectionFilter"
-        )
+        private val LIST = FilterListUtil.LIST
     }
 
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
@@ -187,10 +173,10 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         override fun onBindViewHolder(filterViewHolder: FilterViewHolder, pos: Int) {
             filterViewHolder.textView.text = mList[pos]
             filterViewHolder.textView.setOnClickListener {
-                (mContext as SimpleGLActivity).simpleGLSurfaceView.reCreateRenderThread(mList[pos])
+                (mContext as SimpleGLActivity).simpleGLSurfaceView.changeFilter(pos)
+                (mContext as SimpleGLActivity).simpleGLSurfaceView.filterType = pos
             }
         }
-
 
         class FilterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

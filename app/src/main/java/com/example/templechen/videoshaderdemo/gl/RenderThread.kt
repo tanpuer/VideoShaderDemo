@@ -43,7 +43,7 @@ class RenderThread(
     private var mRefreshPeriod = refreshPeriodsNs
     private lateinit var mWindowSurface: WindowSurface
     private var mDisplayProjectionMatrix = FloatArray(16) { 0f }
-    private val mType = type
+    private var mType = type
 
     // FPS / drop counter.
     private var mRefreshPeriodNanos: Long = 0
@@ -95,17 +95,19 @@ class RenderThread(
         }
     }
 
-    fun surfaceCreated() {
-        prepareGL(mSurface)
+    fun surfaceCreated(type: Int) {
+        prepareGL(mSurface, type)
     }
 
-    private fun prepareGL(surface: Surface) {
+    private fun prepareGL(surface: Surface, type: Int) {
         Log.d(TAG, "prepareGl")
         mWindowSurface = WindowSurface(mEglCore, surface, false)
         mWindowSurface.makeCurrent()
         //custom program
         mOESTextureId = GLUtils.createOESTextureObject()
         mSurfaceTexture = SurfaceTexture(mOESTextureId)
+
+        mType = FilterListUtil.LIST[type]
         setFilter(mType, mOESTextureId)
 
         //todo main thread
@@ -207,6 +209,13 @@ class RenderThread(
         GLUtils.checkGlError("prepareFramebuffer done")
     }
 
+    private var filterNeedReset = false
+    private var filterType = -1
+    fun resetFilter(type: Int) {
+        filterNeedReset = true
+        filterType = type
+    }
+
     /**
      * Advance state and draw frame in response to a vsync event.
      */
@@ -223,6 +232,14 @@ class RenderThread(
             mPreviousWasDropped = true
             mDroppedFrames++
             return
+        }
+
+        //reset
+        if (filterNeedReset && filterType != -1) {
+            filter.release()
+            setFilter(FilterListUtil.LIST[filterType], mOESTextureId)
+            filterNeedReset = false
+            filterType = -1
         }
 
         // Render
@@ -354,23 +371,7 @@ class RenderThread(
     }
 
     private fun setFilter(type: String, mOESTextureId: Int) {
-        when (type) {
-            "BaseFilter" -> filter = BaseFilter(mContext, mOESTextureId)
-            "GrayFilter" -> filter = GrayFilter(mContext, mOESTextureId)
-            "FourPartFilter" -> filter = FourPartFilter(mContext, mOESTextureId)
-            "WaterMarkFilter" -> filter = WaterMarkFilter(mContext, mOESTextureId)
-            "BrightnessFilter" -> filter = BrightnessFilter(mContext, mOESTextureId)
-            "GlassSphereFilter" -> filter = GlassSphereFilter(mContext, mOESTextureId)
-            "ZoomBlurFilter" -> filter = ZoomBlurFilter(mContext, mOESTextureId)
-            "VibranceFilter" -> filter = VibranceFilter(mContext, mOESTextureId)
-            "TransformFilter" -> filter = TransformFilter(mContext, mOESTextureId)
-            "SwirlFilter" -> filter = SwirlFilter(mContext, mOESTextureId)
-            "PixelationFilter" -> filter = PixelationFilter(mContext, mOESTextureId)
-            "GaussianBlurFilter" -> filter = GaussianBlurFilter(mContext, mOESTextureId)
-            "SketchFilter" -> filter = SketchFilter(mContext, mOESTextureId)
-            "SobelEdgeDetectionFilter" -> filter = SobelEdgeDetectionFilter(mContext, mOESTextureId)
-            else -> filter = BaseFilter(mContext, mOESTextureId)
-        }
+        filter = FilterListUtil.setFilter(type, mOESTextureId, mContext)
         filter.initProgram()
     }
 

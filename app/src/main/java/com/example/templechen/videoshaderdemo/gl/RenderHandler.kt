@@ -14,6 +14,7 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         const val MSG_SHUTDOWN = 3
         const val MSG_START_RECORD = 4
         const val MSG_STOP_RECORD = 5
+        const val MSG_CHANGE_FILTER = 6
     }
 
     private var weakRenderThread: WeakReference<RenderThread> = WeakReference(renderThread)
@@ -23,8 +24,8 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
      * <p>
      * Call from UI thread.
      */
-    fun sendSurfaceCreated() {
-        sendMessage(obtainMessage(MSG_SURFACE_CREATED))
+    fun sendSurfaceCreated(type: Int) {
+        sendMessage(obtainMessage(MSG_SURFACE_CREATED, type, 0))
     }
 
     /**
@@ -62,12 +63,16 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         sendMessage(obtainMessage(MSG_STOP_RECORD))
     }
 
+    fun changeFilter(type: Int) {
+        sendMessage(obtainMessage(MSG_CHANGE_FILTER, type, 0))
+    }
+
     override fun handleMessage(msg: Message?) {
         val what = msg?.what
         val renderThread = weakRenderThread.get() ?: return
         when (what) {
             MSG_SURFACE_CREATED -> {
-                renderThread.surfaceCreated()
+                renderThread.surfaceCreated(msg.arg1)
             }
             MSG_SURFACE_CHANGED -> {
                 renderThread.surfaceChanged(msg.arg1, msg.arg2)
@@ -84,6 +89,9 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
             }
             MSG_STOP_RECORD -> {
                 renderThread.stopEncoder()
+            }
+            MSG_CHANGE_FILTER -> {
+                renderThread.resetFilter(msg.arg1)
             }
             else -> throw IllegalArgumentException()
         }

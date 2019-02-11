@@ -17,6 +17,7 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandl
     private var mPlayer = player
     private var renderThread: RenderThread? = null
     private var mSurface: Surface? = null
+    var filterType = 0
 
     init {
         holder.addCallback(this)
@@ -36,7 +37,7 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandl
         renderThread?.start()
         renderThread?.waitUtilReady()
         val renderHandler = renderThread?.mHandler
-        renderHandler?.sendSurfaceCreated()
+        renderHandler?.sendSurfaceCreated(filterType)
         Choreographer.getInstance().postFrameCallback(this)
     }
 
@@ -70,28 +71,9 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandl
         renderHandler?.sendStopEncoder()
     }
 
-    fun reCreateRenderThread(type: String) {
-        mPlayer.setPlayWhenReady(false)
-        var renderHandler = renderThread?.mHandler
-        renderHandler?.sendShutDown()
-        renderThread?.join()
-        Choreographer.getInstance().removeFrameCallback(this)
-        if (mSurface != null) {
-            renderThread =
-                    RenderThread(
-                        context,
-                        mSurface!!,
-                        mActivityHandler,
-                        GLUtils.getDisplayRefreshNsec(context as Activity),
-                        mPlayer,
-                        type
-                    )
-            renderThread?.start()
-            renderThread?.waitUtilReady()
-            renderHandler = renderThread?.mHandler
-            renderHandler?.sendSurfaceCreated()
-            Choreographer.getInstance().postFrameCallback(this)
-        }
+    fun changeFilter(type: Int) {
+        val renderHandler = renderThread?.mHandler
+        renderHandler?.changeFilter(type)
     }
 
 }

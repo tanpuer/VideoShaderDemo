@@ -16,6 +16,7 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandl
     private var mPlayer = player
     private var renderThread: RenderThread? = null
     private var mSurface: Surface? = null
+    var filterType = 0
 
     init {
         surfaceTextureListener = this
@@ -35,7 +36,7 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandl
         renderThread?.start()
         renderThread?.waitUtilReady()
         val renderHandler = renderThread?.mHandler
-        renderHandler?.sendSurfaceCreated()
+        renderHandler?.sendSurfaceCreated(filterType)
         Choreographer.getInstance().postFrameCallback(this)
     }
 
@@ -73,27 +74,9 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandl
         renderHandler?.sendStopEncoder()
     }
 
-    fun reCreateRenderThread() {
+    fun changeFilter(type: Int) {
         val renderHandler = renderThread?.mHandler
-        renderHandler?.sendShutDown()
-        renderThread?.join()
-        Choreographer.getInstance().removeFrameCallback(this)
-        if (mSurface != null) {
-            renderThread =
-                    RenderThread(
-                        context,
-                        mSurface!!,
-                        mActivityHandler,
-                        GLUtils.getDisplayRefreshNsec(context as Activity),
-                        mPlayer,
-                        "SketchFilter"
-                    )
-            renderThread?.start()
-            renderThread?.waitUtilReady()
-            val renderHandler = renderThread?.mHandler
-            renderHandler?.sendSurfaceCreated()
-            Choreographer.getInstance().postFrameCallback(this)
-        }
+        renderHandler?.changeFilter(type)
     }
 
 }
