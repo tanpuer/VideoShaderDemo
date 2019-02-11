@@ -2,7 +2,6 @@ package com.example.templechen.videoshaderdemo.filter
 
 import android.content.Context
 import android.opengl.GLES30
-import android.util.Log
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.R
 import java.nio.FloatBuffer
@@ -27,6 +26,7 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
     private var aWaterMarkTextureCoordLocation = -1
     private var uWaterMarkTextureSamplerLocation = -1
 
+    private var times = 0
 
     override fun initProgram() {
         super.initProgram()
@@ -39,6 +39,19 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
 
     override fun drawFrame() {
         super.drawFrame()
+
+        if (times <= 10) {
+            GLES30.glDeleteTextures(1, intArrayOf(waterMarkTextureId), 0)
+            waterMarkTextureId = GLUtils.loadTexture(context, R.drawable.ic_amino_plus_text_icon)
+            times++
+        } else{
+            GLES30.glDeleteTextures(1, intArrayOf(waterMarkTextureId), 0)
+            waterMarkTextureId = GLUtils.loadTexture(context, R.drawable.drawer_amino_logo)
+            times++
+        }
+        if (times == 20) {
+            times=0
+        }
 
         GLES30.glUseProgram(waterMarkProgram)
         //water mark
