@@ -282,4 +282,8 @@ public class ExoPlayerTool {
     public Cache getCache() {
         return mCache;
     }
+
+    public void setPlaySpeed(float speed) {
+        mExoPlayer.setPlaybackParameters(new PlaybackParameters(speed, 1, false));
+    }
 }
