@@ -1,4 +1,4 @@
-package com.example.templechen.videoshaderdemo.gl
+package com.example.templechen.videoshaderdemo.gl.render
 
 import android.os.Handler
 import android.os.Message

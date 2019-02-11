@@ -1,4 +1,4 @@
-package com.example.templechen.videoshaderdemo.gl
+package com.example.templechen.videoshaderdemo.gl.render
 
 import android.content.Context
 import android.graphics.SurfaceTexture
@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Surface
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.filter.*
+import com.example.templechen.videoshaderdemo.gl.ActivityHandler
 import com.example.templechen.videoshaderdemo.gl.egl.EglCore
 import com.example.templechen.videoshaderdemo.gl.egl.WindowSurface
 import com.example.templechen.videoshaderdemo.gl.encoder.VideoEncoder

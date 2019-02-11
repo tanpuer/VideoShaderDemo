@@ -7,6 +7,7 @@ import android.view.Choreographer
 import android.view.Surface
 import android.view.TextureView
 import com.example.templechen.videoshaderdemo.GLUtils
+import com.example.templechen.videoshaderdemo.gl.render.RenderThread
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
 class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandler: ActivityHandler) :
@@ -25,14 +26,14 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandl
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
         mSurface = Surface(surface)
         renderThread =
-                RenderThread(
-                    context,
-                    mSurface!!,
-                    mActivityHandler,
-                    GLUtils.getDisplayRefreshNsec(context as Activity),
-                    mPlayer,
-                    "BaseFilter"
-                )
+            RenderThread(
+                context,
+                mSurface!!,
+                mActivityHandler,
+                GLUtils.getDisplayRefreshNsec(context as Activity),
+                mPlayer,
+                "BaseFilter"
+            )
         renderThread?.start()
         renderThread?.waitUtilReady()
         val renderHandler = renderThread?.mHandler
