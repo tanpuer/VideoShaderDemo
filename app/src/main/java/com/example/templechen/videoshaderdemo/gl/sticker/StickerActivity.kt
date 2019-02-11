@@ -4,11 +4,10 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import com.example.templechen.videoshaderdemo.gl.ActivityHandler
 import com.example.templechen.videoshaderdemo.gl.SimpleGLSurfaceView
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener{
+class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
     private lateinit var mParentView: RelativeLayout
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
@@ -17,7 +16,8 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mParentView = RelativeLayout(this)
-        mParentView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        mParentView.layoutParams =
+            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         setContentView(mParentView)
         mPlayer = ExoPlayerTool.getInstance(applicationContext)
         mPlayer.quickSetting(
