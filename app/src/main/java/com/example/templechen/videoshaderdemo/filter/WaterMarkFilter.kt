@@ -65,6 +65,17 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
         GLES30.glDisableVertexAttribArray(aWaterMarkPositionLocation)
         GLES30.glDisableVertexAttribArray(aWaterMarkTextureCoordLocation)
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
+    }
 
+    override fun release() {
+        super.release()
+        GLES30.glDeleteProgram(waterMarkProgram)
+        waterMarkProgram = 0
+        GLES30.glDeleteShader(waterMarkVertexShader)
+        waterMarkVertexShader = 0
+        GLES30.glDeleteShader(waterMarkFragmentShader)
+        waterMarkFragmentShader = 0
+        waterMarkFloatBuffer.clear()
+        GLES30.glDeleteTextures(1, intArrayOf(waterMarkTextureId), 0)
     }
 }
