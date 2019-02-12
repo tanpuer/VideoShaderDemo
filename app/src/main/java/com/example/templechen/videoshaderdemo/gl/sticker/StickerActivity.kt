@@ -2,8 +2,12 @@ package com.example.templechen.videoshaderdemo.gl.sticker
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.RelativeLayout
+import com.bumptech.glide.Glide
+import com.example.templechen.videoshaderdemo.R
 import com.example.templechen.videoshaderdemo.gl.SimpleGLSurfaceView
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
@@ -12,6 +16,7 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     private lateinit var mParentView: RelativeLayout
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
     private lateinit var mPlayer: ExoPlayerTool
+    private lateinit var mSticker: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +35,18 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         params.addRule(RelativeLayout.CENTER_IN_PARENT)
         mParentView.addView(simpleGLSurfaceView, params)
         mPlayer.addVideoListener(this)
+
+        //sticker
+        val imageView = ImageView(this)
+        Glide.with(this).load(R.drawable.ic_screenroom_playlist_playing_gif).into(imageView)
+        initSticker(imageView)
+    }
+
+    private fun initSticker(view: View) {
+        mSticker = view
+        val layoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+        mParentView.addView(mSticker, layoutParams)
     }
 
     override fun onVideoSizeChanged(
