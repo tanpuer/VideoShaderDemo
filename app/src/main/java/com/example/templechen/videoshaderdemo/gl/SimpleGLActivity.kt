@@ -6,9 +6,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -16,7 +14,7 @@ import com.example.templechen.videoshaderdemo.R
 import com.example.templechen.videoshaderdemo.filter.FilterListUtil
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
+class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, SurfaceHolder.Callback {
 
     companion object {
         private const val TAG = "SimpleGLActivity"
@@ -33,12 +31,14 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     private lateinit var stopBtn: Button
     private var isRecording = false
     private lateinit var filterRecyclerView: RecyclerView
+    private lateinit var anotherSurfaceView: SurfaceView
+    private lateinit var anotherSurface: Surface
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parentView = RelativeLayout(this)
         parentView.layoutParams =
-                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         setContentView(parentView)
 
         mActivityHandler = ActivityHandler(this)
@@ -108,6 +108,23 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         filterRecyclerView.setBackgroundColor(Color.GRAY)
         parentView.addView(filterRecyclerView, filterLayoutParams)
 
+        //another surface
+        anotherSurfaceView = SurfaceView(this)
+        parentView.addView(anotherSurfaceView, 200, 200)
+        anotherSurfaceView.holder.addCallback(this)
+        anotherSurfaceView.setOnClickListener {
+            simpleGLSurfaceView.renderAnotherSurface(anotherSurface)
+        }
+    }
+
+    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+        anotherSurface = holder!!.surface
+    }
+
+    override fun surfaceDestroyed(holder: SurfaceHolder?) {
+    }
+
+    override fun surfaceCreated(holder: SurfaceHolder?) {
     }
 
     override fun onVideoSizeChanged(

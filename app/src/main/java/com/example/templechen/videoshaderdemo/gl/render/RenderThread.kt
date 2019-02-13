@@ -66,6 +66,11 @@ class RenderThread(
     private lateinit var mInputWindowSurface: WindowSurface
     private lateinit var mVideoEncoderThread: VideoEncoderThread
 
+    //another surface
+    private var renderAnotherSurfaceEnable = false
+    private lateinit var anotherSurface : Surface
+    private lateinit var anotherWindowSurface: WindowSurface
+
     override fun run() {
         Looper.prepare()
         mHandler = RenderHandler(this)
@@ -246,6 +251,33 @@ class RenderThread(
         // Render
         draw()
 
+        // Render another surface
+        if (renderAnotherSurfaceEnable) {
+            anotherWindowSurface.makeCurrentReadFrom(mWindowSurface)
+            GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+            GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
+            GLES30.glBlitFramebuffer(
+                0,
+                0,
+                mWindowSurface.width,
+                mWindowSurface.height,
+                0,
+                0,
+                mWindowSurface.width,
+                mWindowSurface.height,
+                GLES30.GL_COLOR_BUFFER_BIT,
+                GLES30.GL_NEAREST
+            )
+            val err = GLES30.glGetError()
+            if (err != GLES30.GL_NO_ERROR) {
+                Log.w(TAG, "ERROR: glBlitFramebuffer failed: 0x" + Integer.toHexString(err))
+            }
+            anotherWindowSurface.setPresentationTime(timestampsNanos)
+            anotherWindowSurface.swapBuffers()
+
+            mWindowSurface.makeCurrent()
+        }
+
         //recording
         if (recordingEnable) {
             mVideoEncoderThread.frameAvailableSoon()
@@ -330,6 +362,12 @@ class RenderThread(
         mVideoEncoderThread.stopRecording()
         mInputWindowSurface.release()
 //        mVideoEncoderThread.join()
+    }
+
+    fun renderAnotherSurface(surface: Surface) {
+        renderAnotherSurfaceEnable = true
+        anotherSurface = surface
+        anotherWindowSurface = WindowSurface(mEglCore, anotherSurface, false)
     }
 
     private fun releaseGL() {

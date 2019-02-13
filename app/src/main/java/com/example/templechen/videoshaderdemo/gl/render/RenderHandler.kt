@@ -2,6 +2,7 @@ package com.example.templechen.videoshaderdemo.gl.render
 
 import android.os.Handler
 import android.os.Message
+import android.view.Surface
 import java.lang.IllegalArgumentException
 import java.lang.ref.WeakReference
 
@@ -15,6 +16,7 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         const val MSG_START_RECORD = 4
         const val MSG_STOP_RECORD = 5
         const val MSG_CHANGE_FILTER = 6
+        const val MSG_RENDER_ANOTHER_SURFACE = 7
     }
 
     private var weakRenderThread: WeakReference<RenderThread> = WeakReference(renderThread)
@@ -67,6 +69,10 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         sendMessage(obtainMessage(MSG_CHANGE_FILTER, type, 0))
     }
 
+    fun renderAnotherSurface(surface: Surface) {
+        sendMessage(obtainMessage(MSG_RENDER_ANOTHER_SURFACE, surface))
+    }
+
     override fun handleMessage(msg: Message?) {
         val what = msg?.what
         val renderThread = weakRenderThread.get() ?: return
@@ -92,6 +98,9 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
             }
             MSG_CHANGE_FILTER -> {
                 renderThread.resetFilter(msg.arg1)
+            }
+            MSG_RENDER_ANOTHER_SURFACE -> {
+                renderThread.renderAnotherSurface(msg?.obj as Surface)
             }
             else -> throw IllegalArgumentException()
         }

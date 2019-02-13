@@ -77,4 +77,9 @@ class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandl
         renderHandler?.changeFilter(type)
     }
 
+    fun renderAnotherSurface(surface: Surface) {
+        val renderHandler = renderThread?.mHandler
+        renderHandler?.renderAnotherSurface(surface)
+    }
+
 }
