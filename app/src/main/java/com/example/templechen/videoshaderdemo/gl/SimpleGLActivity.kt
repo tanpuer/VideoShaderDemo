@@ -51,7 +51,8 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
         simpleGLSurfaceView = SimpleGLSurfaceView(this, mPlayer, mActivityHandler)
         val params =
             RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        params.addRule(RelativeLayout.CENTER_IN_PARENT)
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        params.bottomMargin = 500
         parentView.addView(simpleGLSurfaceView, params)
         mPlayer.addVideoListener(this)
 
