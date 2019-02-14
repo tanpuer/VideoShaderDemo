@@ -1,5 +1,6 @@
 package com.example.templechen.videoshaderdemo.gl
 
+import android.graphics.Rect
 import android.view.Surface
 import android.view.View
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
@@ -19,5 +20,7 @@ interface SimpleGLView {
     fun stopRenderAnotherSurface()
 
     fun getView() : View
+
+    fun setVideoEditorRect(rect: Rect)
 
 }

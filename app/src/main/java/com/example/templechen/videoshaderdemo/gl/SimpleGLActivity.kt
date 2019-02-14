@@ -135,6 +135,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
         simpleGLSurfaceView.getView().layoutParams = params
 
         videoEditorView.setSize(params.height.toFloat(), params.width.toFloat())
+        videoEditorView.simpleGlView = simpleGLSurfaceView
     }
 
     override fun onPause() {

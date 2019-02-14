@@ -2,6 +2,7 @@ package com.example.templechen.videoshaderdemo.gl
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.*
 import com.example.templechen.videoshaderdemo.GLUtils
@@ -95,4 +96,8 @@ class SimpleGLSurfaceView : SurfaceView, SurfaceHolder.Callback, Choreographer.F
         return this
     }
 
+    override fun setVideoEditorRect(rect: Rect) {
+        val renderHandler = renderThread?.mHandler
+        renderHandler?.setVideoEditorRect(rect)
+    }
 }

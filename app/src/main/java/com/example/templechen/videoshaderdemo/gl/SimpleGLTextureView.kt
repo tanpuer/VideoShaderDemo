@@ -2,6 +2,7 @@ package com.example.templechen.videoshaderdemo.gl
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Rect
 import android.graphics.SurfaceTexture
 import android.util.AttributeSet
 import android.view.Choreographer
@@ -101,6 +102,11 @@ class SimpleGLTextureView :
 
     override fun getView(): View {
         return this
+    }
+
+    override fun setVideoEditorRect(rect: Rect) {
+        val renderHandler = renderThread?.mHandler
+        renderHandler?.setVideoEditorRect(rect)
     }
 
 }

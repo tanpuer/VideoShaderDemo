@@ -8,7 +8,7 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.widget.RelativeLayout
+import com.example.templechen.videoshaderdemo.gl.SimpleGLSurfaceView
 
 class SimpleEditorView : View {
 
@@ -23,6 +23,7 @@ class SimpleEditorView : View {
     private var mPaint: Paint = Paint()
     private var mRect = Rect()
     private var mVideoViewWidth = 0f
+    var simpleGlView: SimpleGLSurfaceView? = null
 
     init {
         mPaint.color = Color.RED
@@ -62,6 +63,7 @@ class SimpleEditorView : View {
                 mRect.set(left, mRect.top, right, mRect.bottom)
                 startX = endX
                 invalidate()
+                simpleGlView?.setVideoEditorRect(mRect)
             }
             MotionEvent.ACTION_UP -> {
 

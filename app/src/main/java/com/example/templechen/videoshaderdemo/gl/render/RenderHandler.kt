@@ -1,5 +1,6 @@
 package com.example.templechen.videoshaderdemo.gl.render
 
+import android.graphics.Rect
 import android.os.Handler
 import android.os.Message
 import android.view.Surface
@@ -18,6 +19,7 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         const val MSG_CHANGE_FILTER = 6
         const val MSG_RENDER_ANOTHER_SURFACE = 7
         const val MSG_STOP_RENDER_ANOTHER_SURFACE = 8
+        const val MSG_VIDEO_EDITOR_RECT = 9
     }
 
     private var weakRenderThread: WeakReference<RenderThread> = WeakReference(renderThread)
@@ -78,6 +80,10 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         sendMessage(obtainMessage(MSG_STOP_RENDER_ANOTHER_SURFACE))
     }
 
+    fun setVideoEditorRect(rect: Rect) {
+        sendMessage(obtainMessage(MSG_VIDEO_EDITOR_RECT, rect))
+    }
+
     override fun handleMessage(msg: Message?) {
         val what = msg?.what
         val renderThread = weakRenderThread.get() ?: return
@@ -112,6 +118,9 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
             }
             MSG_STOP_RENDER_ANOTHER_SURFACE -> {
                 renderThread.stopRenderAnotherSurface()
+            }
+            MSG_VIDEO_EDITOR_RECT -> {
+                renderThread.setVideoEditorRect(msg.obj as Rect)
             }
             else -> throw IllegalArgumentException()
         }

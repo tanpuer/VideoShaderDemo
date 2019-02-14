@@ -1,6 +1,7 @@
 package com.example.templechen.videoshaderdemo.gl.render
 
 import android.content.Context
+import android.graphics.Rect
 import android.graphics.SurfaceTexture
 import android.opengl.GLES30
 import android.opengl.Matrix
@@ -68,8 +69,11 @@ class RenderThread(
 
     //another surface
     private var renderAnotherSurfaceEnable = false
-    private var anotherSurface : Surface? = null
+    private var anotherSurface: Surface? = null
     private lateinit var anotherWindowSurface: WindowSurface
+
+    //video editor view
+    private var editorRect = Rect()
 
     override fun run() {
         Looper.prepare()
@@ -257,10 +261,10 @@ class RenderThread(
             GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
             GLES30.glBlitFramebuffer(
-                0,
-                0,
-                mWindowSurface.width,
-                mWindowSurface.height,
+                editorRect.left,
+                editorRect.top,
+                editorRect.right,
+                editorRect.bottom,
                 0,
                 0,
                 anotherWindowSurface.width,
@@ -374,6 +378,10 @@ class RenderThread(
         renderAnotherSurfaceEnable = false
         anotherSurface = null
         anotherWindowSurface.release()
+    }
+
+    fun setVideoEditorRect(rect: Rect) {
+        editorRect = rect
     }
 
     private fun releaseGL() {
