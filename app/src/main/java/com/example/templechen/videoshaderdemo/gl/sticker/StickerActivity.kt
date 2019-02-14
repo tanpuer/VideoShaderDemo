@@ -14,7 +14,6 @@ import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
 class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
-    private lateinit var mParentView: RelativeLayout
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
     private lateinit var mPlayer: ExoPlayerTool
     private lateinit var mSticker: View
