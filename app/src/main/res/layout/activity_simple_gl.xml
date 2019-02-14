@@ -24,7 +24,6 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/simple_gl_surface_view"
             android:layout_alignBottom="@id/simple_gl_surface_view"
-            android:layout_centerHorizontal="true"
     />
 
     <android.support.v7.widget.RecyclerView
