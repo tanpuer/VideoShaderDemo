@@ -68,7 +68,7 @@ class RenderThread(
 
     //another surface
     private var renderAnotherSurfaceEnable = false
-    private lateinit var anotherSurface : Surface
+    private var anotherSurface : Surface? = null
     private lateinit var anotherWindowSurface: WindowSurface
 
     override fun run() {
@@ -263,8 +263,8 @@ class RenderThread(
                 mWindowSurface.height,
                 0,
                 0,
-                mWindowSurface.width,
-                mWindowSurface.height,
+                anotherWindowSurface.width,
+                anotherWindowSurface.height,
                 GLES30.GL_COLOR_BUFFER_BIT,
                 GLES30.GL_NEAREST
             )
@@ -368,6 +368,12 @@ class RenderThread(
         renderAnotherSurfaceEnable = true
         anotherSurface = surface
         anotherWindowSurface = WindowSurface(mEglCore, anotherSurface, false)
+    }
+
+    fun stopRenderAnotherSurface() {
+        renderAnotherSurfaceEnable = false
+        anotherSurface = null
+        anotherWindowSurface.release()
     }
 
     private fun releaseGL() {

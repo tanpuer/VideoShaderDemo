@@ -17,6 +17,7 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         const val MSG_STOP_RECORD = 5
         const val MSG_CHANGE_FILTER = 6
         const val MSG_RENDER_ANOTHER_SURFACE = 7
+        const val MSG_STOP_RENDER_ANOTHER_SURFACE = 8
     }
 
     private var weakRenderThread: WeakReference<RenderThread> = WeakReference(renderThread)
@@ -69,8 +70,12 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         sendMessage(obtainMessage(MSG_CHANGE_FILTER, type, 0))
     }
 
-    fun renderAnotherSurface(surface: Surface) {
+    fun renderAnotherSurface(surface: Surface?) {
         sendMessage(obtainMessage(MSG_RENDER_ANOTHER_SURFACE, surface))
+    }
+
+    fun stopRenderAnotherSurface() {
+        sendMessage(obtainMessage(MSG_STOP_RENDER_ANOTHER_SURFACE))
     }
 
     override fun handleMessage(msg: Message?) {
@@ -100,7 +105,13 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
                 renderThread.resetFilter(msg.arg1)
             }
             MSG_RENDER_ANOTHER_SURFACE -> {
-                renderThread.renderAnotherSurface(msg?.obj as Surface)
+                val surface = msg.obj
+                if (surface != null) {
+                    renderThread.renderAnotherSurface(surface as Surface)
+                }
+            }
+            MSG_STOP_RENDER_ANOTHER_SURFACE -> {
+                renderThread.stopRenderAnotherSurface()
             }
             else -> throw IllegalArgumentException()
         }

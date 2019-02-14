@@ -33,6 +33,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
     private lateinit var filterRecyclerView: RecyclerView
     private lateinit var anotherSurfaceView: SurfaceView
     private lateinit var anotherSurface: Surface
+    private var renderAnotherSurfaceEnable = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,10 +111,17 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
 
         //another surface
         anotherSurfaceView = SurfaceView(this)
-        parentView.addView(anotherSurfaceView, 200, 200)
+        val anotherLayoutParams = RelativeLayout.LayoutParams(360, 640)
+        anotherLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
+        parentView.addView(anotherSurfaceView, anotherLayoutParams)
         anotherSurfaceView.holder.addCallback(this)
         anotherSurfaceView.setOnClickListener {
-            simpleGLSurfaceView.renderAnotherSurface(anotherSurface)
+            if (!renderAnotherSurfaceEnable) {
+                simpleGLSurfaceView.renderAnotherSurface(anotherSurface)
+            } else {
+                simpleGLSurfaceView.stopRenderAnotherSurface()
+            }
+            renderAnotherSurfaceEnable = !renderAnotherSurfaceEnable
         }
     }
 
