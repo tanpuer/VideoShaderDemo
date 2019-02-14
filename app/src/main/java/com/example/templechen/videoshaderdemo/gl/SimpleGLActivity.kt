@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.example.templechen.videoshaderdemo.R
+import com.example.templechen.videoshaderdemo.editor.VideoEditorView
 import com.example.templechen.videoshaderdemo.filter.FilterListUtil
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
@@ -21,7 +22,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
         private val LIST = FilterListUtil.LIST
     }
 
-    private lateinit var simpleGLSurfaceView: SimpleGLView
+    private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
     private lateinit var parentView: RelativeLayout
     private lateinit var mPlayer: ExoPlayerTool
     private lateinit var mActivityHandler: ActivityHandler
@@ -34,13 +35,12 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
     private lateinit var anotherSurfaceView: SurfaceView
     private lateinit var anotherSurface: Surface
     private var renderAnotherSurfaceEnable = false
+    private lateinit var videoEditorView: VideoEditorView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        parentView = RelativeLayout(this)
-        parentView.layoutParams =
-            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        setContentView(parentView)
+        setContentView(R.layout.activity_simple_gl)
+        parentView = findViewById(R.id.parent_view)
 
         mActivityHandler = ActivityHandler(this)
         mPlayer = ExoPlayerTool.getInstance(applicationContext)
@@ -48,12 +48,8 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
             this,
             "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4"
         )
-        simpleGLSurfaceView = SimpleGLSurfaceView(this, mPlayer, mActivityHandler)
-        val params =
-            RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-        params.bottomMargin = 500
-        parentView.addView(simpleGLSurfaceView.getView(), params)
+        simpleGLSurfaceView = findViewById(R.id.simple_gl_surface_view)
+        simpleGLSurfaceView.initViews(mActivityHandler, mPlayer)
         mPlayer.addVideoListener(this)
 
         //fps view
@@ -77,44 +73,25 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
         parentView.addView(glVersionView, glVersionViewParams)
 
         //start stop btn
-        startBtn = Button(this)
-        val startBtnLayoutParams = RelativeLayout.LayoutParams(300, 150)
-        startBtnLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-        startBtnLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-        startBtn.text = "start"
-        parentView.addView(startBtn, startBtnLayoutParams)
+        startBtn = findViewById(R.id.start_btn)
         startBtn.setOnClickListener {
             isRecording = true
             simpleGLSurfaceView.startRecording()
         }
-
-        stopBtn = Button(this)
-        val stopBtnLayoutParams = RelativeLayout.LayoutParams(300, 150)
-        stopBtnLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-        stopBtnLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-        stopBtn.text = "stop"
-        parentView.addView(stopBtn, stopBtnLayoutParams)
+        stopBtn = findViewById(R.id.stop_btn)
         stopBtn.setOnClickListener {
             isRecording = false
             simpleGLSurfaceView.stopRecording()
         }
 
         //filter RecyclerView
-        filterRecyclerView = RecyclerView(this)
-        val filterLayoutParams =
-            RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        filterLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-        filterLayoutParams.bottomMargin = 200
+        filterRecyclerView = findViewById(R.id.filter_recycler_view)
         filterRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         filterRecyclerView.adapter = FilterAdapter(this, LIST)
         filterRecyclerView.setBackgroundColor(Color.GRAY)
-        parentView.addView(filterRecyclerView, filterLayoutParams)
 
         //another surface
-        anotherSurfaceView = SurfaceView(this)
-        val anotherLayoutParams = RelativeLayout.LayoutParams(360, 640)
-        anotherLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
-        parentView.addView(anotherSurfaceView, anotherLayoutParams)
+        anotherSurfaceView = findViewById(R.id.another_surface)
         anotherSurfaceView.holder.addCallback(this)
         anotherSurfaceView.setOnClickListener {
             if (!renderAnotherSurfaceEnable) {
@@ -124,6 +101,9 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
             }
             renderAnotherSurfaceEnable = !renderAnotherSurfaceEnable
         }
+
+        //video editor
+        videoEditorView = findViewById(R.id.video_editor_view)
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
@@ -153,6 +133,8 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
             params.height = (viewWidth / videoRatio).toInt()
         }
         simpleGLSurfaceView.getView().layoutParams = params
+
+        videoEditorView.setSize(params.height.toFloat())
     }
 
     override fun onPause() {

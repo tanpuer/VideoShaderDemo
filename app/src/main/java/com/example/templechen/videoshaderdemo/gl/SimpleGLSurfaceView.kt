@@ -2,22 +2,28 @@ package com.example.templechen.videoshaderdemo.gl
 
 import android.app.Activity
 import android.content.Context
+import android.util.AttributeSet
 import android.view.*
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.gl.render.RenderThread
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class SimpleGLSurfaceView(context: Context, player: ExoPlayerTool, activityHandler: ActivityHandler?) :
-    SurfaceView(context), SurfaceHolder.Callback,
-    Choreographer.FrameCallback, SimpleGLView {
+class SimpleGLSurfaceView : SurfaceView, SurfaceHolder.Callback, Choreographer.FrameCallback, SimpleGLView {
 
-    private var mActivityHandler = activityHandler
-    private var mPlayer = player
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+
+    private lateinit var mActivityHandler: ActivityHandler
+    private lateinit var mPlayer: ExoPlayerTool
     private var renderThread: RenderThread? = null
     private var mSurface: Surface? = null
     var filterType = 0
 
-    init {
+    override fun initViews(activityHandler: ActivityHandler, playerTool: ExoPlayerTool) {
+        mActivityHandler = activityHandler
+        mPlayer = playerTool
         holder.addCallback(this)
     }
 

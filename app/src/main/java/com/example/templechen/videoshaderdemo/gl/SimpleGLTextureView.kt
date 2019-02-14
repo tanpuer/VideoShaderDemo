@@ -3,6 +3,7 @@ package com.example.templechen.videoshaderdemo.gl
 import android.app.Activity
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.util.AttributeSet
 import android.view.Choreographer
 import android.view.Surface
 import android.view.TextureView
@@ -11,16 +12,22 @@ import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.gl.render.RenderThread
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandler: ActivityHandler) :
-    TextureView(context), TextureView.SurfaceTextureListener, Choreographer.FrameCallback, SimpleGLView{
+class SimpleGLTextureView :
+    TextureView, TextureView.SurfaceTextureListener, Choreographer.FrameCallback, SimpleGLView {
 
-    private var mActivityHandler = activityHandler
-    private var mPlayer = player
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    private lateinit var mActivityHandler: ActivityHandler
+    private lateinit var mPlayer: ExoPlayerTool
     private var renderThread: RenderThread? = null
     private var mSurface: Surface? = null
     var filterType = 0
 
-    init {
+    override fun initViews(activityHandler: ActivityHandler, playerTool: ExoPlayerTool) {
+        mActivityHandler = activityHandler
+        mPlayer = playerTool
         surfaceTextureListener = this
     }
 

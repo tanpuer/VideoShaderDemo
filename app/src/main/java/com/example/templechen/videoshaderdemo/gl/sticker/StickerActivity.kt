@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import com.bumptech.glide.Glide
 import com.example.templechen.videoshaderdemo.R
+import com.example.templechen.videoshaderdemo.gl.ActivityHandler
 import com.example.templechen.videoshaderdemo.gl.SimpleGLSurfaceView
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
@@ -29,7 +30,8 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
             this,
             "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4"
         )
-        simpleGLSurfaceView = SimpleGLSurfaceView(this, mPlayer, null)
+        simpleGLSurfaceView = SimpleGLSurfaceView(this)
+        simpleGLSurfaceView.initViews(ActivityHandler(this), mPlayer)
         val params =
             RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         params.addRule(RelativeLayout.CENTER_IN_PARENT)
