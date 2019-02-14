@@ -289,14 +289,14 @@ class RenderThread(
             GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
             GLES30.glBlitFramebuffer(
+                editorRect.left,
+                editorRect.top,
+                editorRect.right,
+                editorRect.bottom,
                 0,
                 0,
-                mWindowSurface.width,
-                mWindowSurface.height,
-                0,
-                0,
-                mWindowSurface.width,
-                mWindowSurface.height,
+                mInputWindowSurface.width,
+                mInputWindowSurface.height,
                 GLES30.GL_COLOR_BUFFER_BIT,
                 GLES30.GL_NEAREST
             )
@@ -346,8 +346,8 @@ class RenderThread(
 
     fun startEncoder() {
         val BIT_RATE = 4000000
-        val WIDTH = mWindowSurface.width
-        val HEIGHT = mWindowSurface.height
+        val WIDTH = 720
+        val HEIGHT = 1280
         var outputFile = File(mContext.cacheDir, "gltest.mp4")
         if (outputFile.exists()) {
             outputFile.delete()
