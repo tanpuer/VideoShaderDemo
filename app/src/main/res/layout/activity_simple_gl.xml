@@ -18,9 +18,9 @@
             android:layout_height="200dp"
     />
 
-    <com.example.templechen.videoshaderdemo.editor.VideoEditorView
+    <com.example.templechen.videoshaderdemo.editor.SimpleEditorView
             android:id="@+id/video_editor_view"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/simple_gl_surface_view"
             android:layout_alignBottom="@id/simple_gl_surface_view"

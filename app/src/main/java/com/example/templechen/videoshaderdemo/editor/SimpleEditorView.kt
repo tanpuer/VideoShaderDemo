@@ -10,7 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 
-class VideoEditorView : View {
+class SimpleEditorView : View {
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -34,16 +34,11 @@ class VideoEditorView : View {
 
     fun setSize(videoViewWHeight: Float, videoViewWidth: Float) {
         mVideoViewWidth = videoViewWidth
-        val lp = layoutParams as RelativeLayout.LayoutParams
         val width = (videoViewWHeight / 16f * 9f).toInt()
-        lp.width = width
-        lp.height = videoViewWHeight.toInt()
         val marginLeft = (videoViewWidth - width) / 2
-        lp.leftMargin = marginLeft.toInt()
-        layoutParams = lp
 //        mRect.set((width * 0.05).toInt(), (height * 0.05f).toInt(), (width * 0.95).toInt(), (height * 0.95).toInt())
-        mRect.set(0, 0, width, videoViewWHeight.toInt())
-
+        mRect.set(marginLeft.toInt(), 0, width + marginLeft.toInt(), videoViewWHeight.toInt())
+        invalidate()
     }
 
     override fun draw(canvas: Canvas?) {
@@ -60,17 +55,13 @@ class VideoEditorView : View {
             }
             MotionEvent.ACTION_MOVE -> {
                 val endX = event.x
-                val lm = layoutParams as RelativeLayout.LayoutParams
-                lm.leftMargin += (endX - startX).toInt()
-                //left and right border
-                if (lm.leftMargin < 0) {
-                    lm.leftMargin = 0
-                }
-                if (lm.leftMargin > mVideoViewWidth - lm.width) {
-                    lm.leftMargin = (mVideoViewWidth - lm.width).toInt()
-                }
-                layoutParams = lm
+                var left = mRect.left
+                var right = mRect.right
+                left += (endX - startX).toInt()
+                right += (endX - startX).toInt()
+                mRect.set(left, mRect.top, right, mRect.bottom)
                 startX = endX
+                invalidate()
             }
             MotionEvent.ACTION_UP -> {
 

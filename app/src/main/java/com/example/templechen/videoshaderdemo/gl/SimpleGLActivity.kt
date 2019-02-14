@@ -11,7 +11,7 @@ import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.example.templechen.videoshaderdemo.R
-import com.example.templechen.videoshaderdemo.editor.VideoEditorView
+import com.example.templechen.videoshaderdemo.editor.SimpleEditorView
 import com.example.templechen.videoshaderdemo.filter.FilterListUtil
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
@@ -35,7 +35,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
     private lateinit var anotherSurfaceView: SurfaceView
     private lateinit var anotherSurface: Surface
     private var renderAnotherSurfaceEnable = false
-    private lateinit var videoEditorView: VideoEditorView
+    private lateinit var videoEditorView: SimpleEditorView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
