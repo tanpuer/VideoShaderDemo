@@ -16,13 +16,13 @@ class SimpleGLSurfaceView : SurfaceView, SurfaceHolder.Callback, Choreographer.F
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
 
-    private lateinit var mActivityHandler: ActivityHandler
+    private var mActivityHandler: ActivityHandler? = null
     private lateinit var mPlayer: ExoPlayerTool
     private var renderThread: RenderThread? = null
     private var mSurface: Surface? = null
     var filterType = 0
 
-    override fun initViews(activityHandler: ActivityHandler, playerTool: ExoPlayerTool) {
+    override fun initViews(activityHandler: ActivityHandler?, playerTool: ExoPlayerTool) {
         mActivityHandler = activityHandler
         mPlayer = playerTool
         holder.addCallback(this)

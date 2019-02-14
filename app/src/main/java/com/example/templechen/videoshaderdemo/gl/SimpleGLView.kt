@@ -7,7 +7,7 @@ import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
 interface SimpleGLView {
 
-    fun initViews(activityHandler: ActivityHandler, playerTool: ExoPlayerTool)
+    fun initViews(activityHandler: ActivityHandler?, playerTool: ExoPlayerTool)
 
     fun startRecording()
 

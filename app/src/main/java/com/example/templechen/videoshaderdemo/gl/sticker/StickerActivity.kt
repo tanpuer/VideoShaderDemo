@@ -21,34 +21,24 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mParentView = RelativeLayout(this)
-        mParentView.layoutParams =
-            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        setContentView(mParentView)
+        setContentView(R.layout.activity_sticker)
         mPlayer = ExoPlayerTool.getInstance(applicationContext)
         mPlayer.quickSetting(
             this,
             "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4"
         )
-        simpleGLSurfaceView = SimpleGLSurfaceView(this)
-        simpleGLSurfaceView.initViews(ActivityHandler(this), mPlayer)
-        val params =
-            RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        params.addRule(RelativeLayout.CENTER_IN_PARENT)
-        mParentView.addView(simpleGLSurfaceView, params)
+        simpleGLSurfaceView = findViewById(R.id.simple_gl_surface_view)
+        simpleGLSurfaceView.initViews(null, mPlayer)
         mPlayer.addVideoListener(this)
 
         //sticker
-        val imageView = ImageView(this)
+        val imageView: ImageView = findViewById(R.id.image)
         Glide.with(this).load(R.drawable.ic_screenroom_playlist_playing_gif).into(imageView)
         initSticker(imageView)
     }
 
     private fun initSticker(view: View) {
         mSticker = view
-        val layoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-        mParentView.addView(mSticker, layoutParams)
     }
 
     override fun onVideoSizeChanged(
