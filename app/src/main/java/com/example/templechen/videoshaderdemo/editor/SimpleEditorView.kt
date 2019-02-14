@@ -40,6 +40,7 @@ class SimpleEditorView : View {
 //        mRect.set((width * 0.05).toInt(), (height * 0.05f).toInt(), (width * 0.95).toInt(), (height * 0.95).toInt())
         mRect.set(marginLeft.toInt(), 0, width + marginLeft.toInt(), videoViewWHeight.toInt())
         invalidate()
+        simpleGlView?.setVideoEditorRect(mRect)
     }
 
     override fun draw(canvas: Canvas?) {
@@ -60,6 +61,14 @@ class SimpleEditorView : View {
                 var right = mRect.right
                 left += (endX - startX).toInt()
                 right += (endX - startX).toInt()
+                if (left < 0) {
+                    left = 0
+                    right = mRect.width()
+                }
+                if (right > mVideoViewWidth) {
+                    right = mVideoViewWidth.toInt()
+                    left = (mVideoViewWidth - mRect.width()).toInt()
+                }
                 mRect.set(left, mRect.top, right, mRect.bottom)
                 startX = endX
                 invalidate()
@@ -71,4 +80,5 @@ class SimpleEditorView : View {
         }
         return true
     }
+
 }
