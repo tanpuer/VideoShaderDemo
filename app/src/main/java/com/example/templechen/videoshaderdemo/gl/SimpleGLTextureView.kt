@@ -6,12 +6,13 @@ import android.graphics.SurfaceTexture
 import android.view.Choreographer
 import android.view.Surface
 import android.view.TextureView
+import android.view.View
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.gl.render.RenderThread
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
 class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandler: ActivityHandler) :
-    TextureView(context), TextureView.SurfaceTextureListener, Choreographer.FrameCallback {
+    TextureView(context), TextureView.SurfaceTextureListener, Choreographer.FrameCallback, SimpleGLView{
 
     private var mActivityHandler = activityHandler
     private var mPlayer = player
@@ -65,29 +66,34 @@ class SimpleGLTextureView(context: Context, player: ExoPlayerTool, activityHandl
         renderHandler?.sendDoFrame(frameTimeNanos)
     }
 
-    fun startRecording() {
+    override fun startRecording() {
         val renderHandler = renderThread?.mHandler
         renderHandler?.sendStartEncoder()
     }
 
-    fun stopRecording() {
+    override fun stopRecording() {
         val renderHandler = renderThread?.mHandler
         renderHandler?.sendStopEncoder()
     }
 
-    fun changeFilter(type: Int) {
+    override fun changeFilter(type: Int) {
         val renderHandler = renderThread?.mHandler
+        filterType = type
         renderHandler?.changeFilter(type)
     }
 
-    fun renderAnotherSurface(surface: Surface?) {
+    override fun renderAnotherSurface(surface: Surface?) {
         val renderHandler = renderThread?.mHandler
         renderHandler?.renderAnotherSurface(surface)
     }
 
-    fun stopRenderAnotherSurface() {
+    override fun stopRenderAnotherSurface() {
         val renderHandler = renderThread?.mHandler
         renderHandler?.stopRenderAnotherSurface()
+    }
+
+    override fun getView(): View {
+        return this
     }
 
 }

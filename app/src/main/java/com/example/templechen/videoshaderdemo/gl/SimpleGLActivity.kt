@@ -21,7 +21,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
         private val LIST = FilterListUtil.LIST
     }
 
-    private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
+    private lateinit var simpleGLSurfaceView: SimpleGLView
     private lateinit var parentView: RelativeLayout
     private lateinit var mPlayer: ExoPlayerTool
     private lateinit var mActivityHandler: ActivityHandler
@@ -53,7 +53,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
             RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
         params.bottomMargin = 500
-        parentView.addView(simpleGLSurfaceView, params)
+        parentView.addView(simpleGLSurfaceView.getView(), params)
         mPlayer.addVideoListener(this)
 
         //fps view
@@ -142,9 +142,9 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
         unappliedRotationDegrees: Int,
         pixelWidthHeightRatio: Float
     ) {
-        val params = simpleGLSurfaceView.layoutParams
-        val viewWidth = simpleGLSurfaceView.width
-        val viewHeight = simpleGLSurfaceView.height
+        val params = simpleGLSurfaceView.getView().layoutParams
+        val viewWidth = simpleGLSurfaceView.getView().width
+        val viewHeight = simpleGLSurfaceView.getView().height
         val ratio = viewWidth * 1.0f / viewHeight
         val videoRatio = width * 1.0f / height
         if (ratio > videoRatio) {
@@ -152,7 +152,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
         } else {
             params.height = (viewWidth / videoRatio).toInt()
         }
-        simpleGLSurfaceView.layoutParams = params
+        simpleGLSurfaceView.getView().layoutParams = params
     }
 
     override fun onPause() {
@@ -200,7 +200,6 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
             filterViewHolder.textView.text = mList[pos]
             filterViewHolder.textView.setOnClickListener {
                 (mContext as SimpleGLActivity).simpleGLSurfaceView.changeFilter(pos)
-                (mContext as SimpleGLActivity).simpleGLSurfaceView.filterType = pos
             }
         }
 
