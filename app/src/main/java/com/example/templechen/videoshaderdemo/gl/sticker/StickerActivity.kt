@@ -59,4 +59,9 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         simpleGLSurfaceView.layoutParams = params
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mPlayer.release()
+    }
+
 }
