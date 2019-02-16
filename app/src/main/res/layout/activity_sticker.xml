@@ -15,4 +15,19 @@
             android:layout_height="100dp"
     />
 
+    <TextView
+            android:id="@+id/fps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+    />
+
+    <TextView
+            android:id="@+id/gl_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fps"
+            android:textSize="16sp"
+    />
+
 </RelativeLayout>

@@ -15,7 +15,7 @@ import com.example.templechen.videoshaderdemo.editor.SimpleEditorView
 import com.example.templechen.videoshaderdemo.filter.FilterListUtil
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, SurfaceHolder.Callback {
+class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, SurfaceHolder.Callback, IGLInfoCallback{
 
     companion object {
         private const val TAG = "SimpleGLActivity"
@@ -157,11 +157,11 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
         mPlayer.release()
     }
 
-    fun updateFps(tfps: Int, dropped: Int) {
+    override fun updateFps(tfps: Int, dropped: Int) {
         fpsView.text = "Frame rate: ${tfps / 1000.0f}fps (${dropped} dropped)"
     }
 
-    fun updateGLVersion(version: Int) {
+    override fun updateGLVersion(version: Int) {
         glVersionView.text = "GLES Version: ${version}"
     }
 

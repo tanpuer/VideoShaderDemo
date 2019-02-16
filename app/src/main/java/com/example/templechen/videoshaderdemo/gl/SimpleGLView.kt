@@ -1,6 +1,5 @@
 package com.example.templechen.videoshaderdemo.gl
 
-import android.graphics.Bitmap
 import android.graphics.Rect
 import android.view.Surface
 import android.view.View

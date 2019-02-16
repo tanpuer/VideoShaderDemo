@@ -3,21 +3,27 @@ package com.example.templechen.videoshaderdemo.gl.sticker
 import android.graphics.RectF
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.templechen.videoshaderdemo.R
+import com.example.templechen.videoshaderdemo.gl.ActivityHandler
+import com.example.templechen.videoshaderdemo.gl.IGLInfoCallback
 import com.example.templechen.videoshaderdemo.gl.SimpleGLSurfaceView
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
+class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLInfoCallback{
 
     companion object {
         private const val TAG = "StickerActivity"
     }
 
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
+    private lateinit var fpsView: TextView
+    private lateinit var glVersionView : TextView
     private lateinit var mPlayer: ExoPlayerTool
     private lateinit var mStickerView: StickerView
     private var mStickerViewRectF = RectF()
+    private lateinit var mActivityHandler: ActivityHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,13 +34,18 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
             "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4"
         )
         simpleGLSurfaceView = findViewById(R.id.simple_gl_surface_view)
-        simpleGLSurfaceView.initViews(null, mPlayer, 3)
+        mActivityHandler = ActivityHandler(this)
+        simpleGLSurfaceView.initViews(mActivityHandler, mPlayer, 3)
         mPlayer.addVideoListener(this)
 
         //sticker
         mStickerView = findViewById(R.id.image)
         Glide.with(this).load(R.drawable.drawer_amino_logo).into(mStickerView)
         initSticker()
+
+        //fps and version
+        fpsView = findViewById(R.id.fps)
+        glVersionView = findViewById(R.id.gl_version)
     }
 
     private fun initSticker() {
@@ -94,4 +105,11 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         mPlayer.release()
     }
 
+    override fun updateFps(tfps: Int, dropped: Int) {
+        fpsView.text = "Frame rate: ${tfps / 1000.0f}fps (${dropped} dropped)"
+    }
+
+    override fun updateGLVersion(version: Int) {
+        glVersionView.text = "GLES Version: ${version}"
+    }
 }
