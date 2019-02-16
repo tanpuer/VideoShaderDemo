@@ -40,13 +40,13 @@ class StickerView : ImageView, View.OnTouchListener {
             if (e1 != null && e2 != null) {
                 deltaX = e2.x - e1.x
                 deltaY = e2.y - e1.y
+                mStickerView.layout(
+                    (mStickerView.left + deltaX).toInt(),
+                    (mStickerView.top + deltaY).toInt(),
+                    (mStickerView.right + deltaX).toInt(),
+                    (mStickerView.bottom + deltaY).toInt()
+                )
             }
-            mStickerView.layout(
-                (mStickerView.left + deltaX).toInt(),
-                (mStickerView.top + deltaY).toInt(),
-                (mStickerView.right + deltaX).toInt(),
-                (mStickerView.bottom + deltaY).toInt()
-            )
             return true
         }
 
