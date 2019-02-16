@@ -36,7 +36,6 @@ class StickerView : ImageView, View.OnTouchListener {
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-            mStickerView.onStickerViewScroll?.stickerViewScroll(mStickerView)
             if (e1 != null && e2 != null) {
                 deltaX = e2.x - e1.x
                 deltaY = e2.y - e1.y
@@ -46,6 +45,7 @@ class StickerView : ImageView, View.OnTouchListener {
                     (mStickerView.right + deltaX).toInt(),
                     (mStickerView.bottom + deltaY).toInt()
                 )
+                mStickerView.onStickerViewScroll?.stickerViewScroll(mStickerView)
             }
             return true
         }
@@ -54,6 +54,7 @@ class StickerView : ImageView, View.OnTouchListener {
             mStickerView.onStickerViewClickListener?.onStickerViewClicked(mStickerView)
             return true
         }
+
     }
 
     fun setOnStickerViewClickListener(onStickerViewClickListener: OnStickerViewClickListener) {
