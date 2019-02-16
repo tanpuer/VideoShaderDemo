@@ -49,7 +49,7 @@ class SimpleGLActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, Surf
             "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4"
         )
         simpleGLSurfaceView = findViewById(R.id.simple_gl_surface_view)
-        simpleGLSurfaceView.initViews(mActivityHandler, mPlayer)
+        simpleGLSurfaceView.initViews(mActivityHandler, mPlayer, 0)
         mPlayer.addVideoListener(this)
 
         //fps view

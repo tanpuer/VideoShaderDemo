@@ -1,6 +1,7 @@
 package com.example.templechen.videoshaderdemo.filter
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.opengl.GLES30
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.R
@@ -15,8 +16,8 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
         const val uWaterMarkTextureSampler = "uWaterMarkTextureSampler"
     }
 
-    private var waterMarkTextureId : Int = -1
-    private lateinit var waterMarkFloatBuffer : FloatBuffer
+    private var waterMarkTextureId: Int = -1
+    private lateinit var waterMarkFloatBuffer: FloatBuffer
     private var waterMarkVertexShader = -1
     private var waterMarkFragmentShader = -1
     private var waterMarkProgram = -1
@@ -28,29 +29,43 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
 
     private var times = 0
 
+    //custom watermark bitmap
+    var customWaterMarkBitmap: Bitmap? = null
+
     override fun initProgram() {
         super.initProgram()
         waterMarkTextureId = GLUtils.loadTexture(context, R.drawable.drawer_amino_logo)
         waterMarkFloatBuffer = GLUtils.createBuffer(GLUtils.waterMarkVertexData)
-        waterMarkVertexShader = GLUtils.loadShader(GLES30.GL_VERTEX_SHADER, GLUtils.readShaderFromResource(context, R.raw.water_mark_vertex_shader))
-        waterMarkFragmentShader = GLUtils.loadShader(GLES30.GL_FRAGMENT_SHADER, GLUtils.readShaderFromResource(context, R.raw.water_mark_fragment_shader))
+        waterMarkVertexShader = GLUtils.loadShader(
+            GLES30.GL_VERTEX_SHADER,
+            GLUtils.readShaderFromResource(context, R.raw.water_mark_vertex_shader)
+        )
+        waterMarkFragmentShader = GLUtils.loadShader(
+            GLES30.GL_FRAGMENT_SHADER,
+            GLUtils.readShaderFromResource(context, R.raw.water_mark_fragment_shader)
+        )
         waterMarkProgram = GLUtils.createProgram(waterMarkVertexShader, waterMarkFragmentShader)
     }
 
     override fun drawFrame() {
         super.drawFrame()
 
-        if (times <= 10) {
+        if (customWaterMarkBitmap == null) {
+            if (times <= 10) {
+                GLES30.glDeleteTextures(1, intArrayOf(waterMarkTextureId), 0)
+                waterMarkTextureId = GLUtils.loadTexture(context, R.drawable.ic_amino_plus_text_icon)
+                times++
+            } else {
+                GLES30.glDeleteTextures(1, intArrayOf(waterMarkTextureId), 0)
+                waterMarkTextureId = GLUtils.loadTexture(context, R.drawable.drawer_amino_logo)
+                times++
+            }
+            if (times == 20) {
+                times = 0
+            }
+        } else {
             GLES30.glDeleteTextures(1, intArrayOf(waterMarkTextureId), 0)
-            waterMarkTextureId = GLUtils.loadTexture(context, R.drawable.ic_amino_plus_text_icon)
-            times++
-        } else{
-            GLES30.glDeleteTextures(1, intArrayOf(waterMarkTextureId), 0)
-            waterMarkTextureId = GLUtils.loadTexture(context, R.drawable.drawer_amino_logo)
-            times++
-        }
-        if (times == 20) {
-            times=0
+            waterMarkTextureId = GLUtils.loadTexture(context, customWaterMarkBitmap!!)
         }
 
         GLES30.glUseProgram(waterMarkProgram)
@@ -71,7 +86,14 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
         GLES30.glVertexAttribPointer(aWaterMarkPositionLocation, 2, GLES30.GL_FLOAT, false, 16, waterMarkFloatBuffer)
         waterMarkFloatBuffer.position(2)
         GLES30.glEnableVertexAttribArray(aWaterMarkTextureCoordLocation)
-        GLES30.glVertexAttribPointer(aWaterMarkTextureCoordLocation, 2, GLES30.GL_FLOAT, false, 16, waterMarkFloatBuffer)
+        GLES30.glVertexAttribPointer(
+            aWaterMarkTextureCoordLocation,
+            2,
+            GLES30.GL_FLOAT,
+            false,
+            16,
+            waterMarkFloatBuffer
+        )
 
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6)
 

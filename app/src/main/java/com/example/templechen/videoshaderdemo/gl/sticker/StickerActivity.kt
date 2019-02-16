@@ -2,6 +2,7 @@ package com.example.templechen.videoshaderdemo.gl.sticker
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -13,6 +14,10 @@ import com.example.templechen.videoshaderdemo.gl.SimpleGLSurfaceView
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
 class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
+
+    companion object {
+        private const val TAG = "StickerActivity"
+    }
 
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
     private lateinit var mPlayer: ExoPlayerTool
@@ -27,7 +32,7 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
             "https://oimryzjfe.qnssl.com/content/1F3D7F815F2C6870FB512B8CA2C3D2C1.mp4"
         )
         simpleGLSurfaceView = findViewById(R.id.simple_gl_surface_view)
-        simpleGLSurfaceView.initViews(null, mPlayer)
+        simpleGLSurfaceView.initViews(null, mPlayer, 3)
         mPlayer.addVideoListener(this)
 
         //sticker
@@ -38,6 +43,9 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
     private fun initSticker(view: View) {
         mSticker = view
+        mSticker.setOnClickListener {
+            simpleGLSurfaceView.setCustomStickerView(mSticker)
+        }
     }
 
     override fun onVideoSizeChanged(

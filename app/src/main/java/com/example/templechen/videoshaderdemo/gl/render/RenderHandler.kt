@@ -1,5 +1,6 @@
 package com.example.templechen.videoshaderdemo.gl.render
 
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Handler
 import android.os.Message
@@ -20,6 +21,7 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         const val MSG_RENDER_ANOTHER_SURFACE = 7
         const val MSG_STOP_RENDER_ANOTHER_SURFACE = 8
         const val MSG_VIDEO_EDITOR_RECT = 9
+        const val MSG_CUSTOM_WATER_MARK_BITMAP = 10
     }
 
     private var weakRenderThread: WeakReference<RenderThread> = WeakReference(renderThread)
@@ -84,6 +86,10 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
         sendMessage(obtainMessage(MSG_VIDEO_EDITOR_RECT, rect))
     }
 
+    fun setCustomWaterMark(bitmap: Bitmap?) {
+        sendMessage(obtainMessage(MSG_CUSTOM_WATER_MARK_BITMAP, bitmap))
+    }
+
     override fun handleMessage(msg: Message?) {
         val what = msg?.what
         val renderThread = weakRenderThread.get() ?: return
@@ -121,6 +127,9 @@ class RenderHandler(renderThread: RenderThread) : Handler() {
             }
             MSG_VIDEO_EDITOR_RECT -> {
                 renderThread.setVideoEditorRect(msg.obj as Rect)
+            }
+            MSG_CUSTOM_WATER_MARK_BITMAP -> {
+                renderThread.setCustomWaterMark(msg.obj as Bitmap)
             }
             else -> throw IllegalArgumentException()
         }

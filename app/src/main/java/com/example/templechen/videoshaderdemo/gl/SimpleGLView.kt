@@ -1,5 +1,6 @@
 package com.example.templechen.videoshaderdemo.gl
 
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.view.Surface
 import android.view.View
@@ -7,7 +8,7 @@ import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
 interface SimpleGLView {
 
-    fun initViews(activityHandler: ActivityHandler?, playerTool: ExoPlayerTool)
+    fun initViews(activityHandler: ActivityHandler?, playerTool: ExoPlayerTool, filterType: Int)
 
     fun startRecording()
 
@@ -19,8 +20,10 @@ interface SimpleGLView {
 
     fun stopRenderAnotherSurface()
 
-    fun getView() : View
+    fun getView(): View
 
     fun setVideoEditorRect(rect: Rect)
+
+    fun setCustomStickerView(view: View?)
 
 }

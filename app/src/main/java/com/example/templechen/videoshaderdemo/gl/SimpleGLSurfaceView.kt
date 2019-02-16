@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.*
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.gl.render.RenderThread
+import com.example.templechen.videoshaderdemo.gl.sticker.StickerUtil
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
 class SimpleGLSurfaceView : SurfaceView, SurfaceHolder.Callback, Choreographer.FrameCallback, SimpleGLView {
@@ -20,11 +21,13 @@ class SimpleGLSurfaceView : SurfaceView, SurfaceHolder.Callback, Choreographer.F
     private lateinit var mPlayer: ExoPlayerTool
     private var renderThread: RenderThread? = null
     private var mSurface: Surface? = null
-    var filterType = 0
+    private var mFilterType = 0
+    private var mStickerView: View? = null
 
-    override fun initViews(activityHandler: ActivityHandler?, playerTool: ExoPlayerTool) {
+    override fun initViews(activityHandler: ActivityHandler?, playerTool: ExoPlayerTool, filterType: Int) {
         mActivityHandler = activityHandler
         mPlayer = playerTool
+        mFilterType = filterType
         holder.addCallback(this)
     }
 
@@ -42,7 +45,7 @@ class SimpleGLSurfaceView : SurfaceView, SurfaceHolder.Callback, Choreographer.F
         renderThread?.start()
         renderThread?.waitUtilReady()
         val renderHandler = renderThread?.mHandler
-        renderHandler?.sendSurfaceCreated(filterType)
+        renderHandler?.sendSurfaceCreated(mFilterType)
         Choreographer.getInstance().postFrameCallback(this)
     }
 
@@ -63,6 +66,9 @@ class SimpleGLSurfaceView : SurfaceView, SurfaceHolder.Callback, Choreographer.F
     override fun doFrame(frameTimeNanos: Long) {
         val renderHandler = renderThread?.mHandler
         Choreographer.getInstance().postFrameCallback(this)
+        if (mStickerView != null && mFilterType == 3) {
+            renderHandler?.setCustomWaterMark(StickerUtil.convertViewToBitmap(mStickerView!!))
+        }
         renderHandler?.sendDoFrame(frameTimeNanos)
     }
 
@@ -78,7 +84,7 @@ class SimpleGLSurfaceView : SurfaceView, SurfaceHolder.Callback, Choreographer.F
 
     override fun changeFilter(type: Int) {
         val renderHandler = renderThread?.mHandler
-        filterType = type
+        mFilterType = type
         renderHandler?.changeFilter(type)
     }
 
@@ -100,4 +106,9 @@ class SimpleGLSurfaceView : SurfaceView, SurfaceHolder.Callback, Choreographer.F
         val renderHandler = renderThread?.mHandler
         renderHandler?.setVideoEditorRect(rect)
     }
+
+    override fun setCustomStickerView(view: View?) {
+        mStickerView = view
+    }
+
 }

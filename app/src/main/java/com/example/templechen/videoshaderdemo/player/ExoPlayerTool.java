@@ -6,10 +6,7 @@ import android.util.Log;
 import android.view.Surface;
 import com.google.android.exoplayer2.*;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.LoopingMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.*;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -73,6 +70,13 @@ public class ExoPlayerTool {
         if (surface != null) {
             setVideoSurface(surface);
         }
+    }
+
+    public void clipQuickSetting(Context context, String url, long startPositionUs, long endPositionUs) {
+        Uri uri = Uri.parse(url);
+        MediaSource mediaSource = buildMediaSource(uri, createDataSourceFactory(uri, context), context);
+        ClippingMediaSource clippingMediaSource = new ClippingMediaSource(mediaSource, startPositionUs, endPositionUs);
+        prepare(new LoopingMediaSource(clippingMediaSource));
     }
 
     public MediaSource setUrl(String url, Context context) {

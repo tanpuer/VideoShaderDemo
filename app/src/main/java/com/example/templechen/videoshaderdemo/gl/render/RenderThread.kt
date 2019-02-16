@@ -1,6 +1,7 @@
 package com.example.templechen.videoshaderdemo.gl.render
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.graphics.SurfaceTexture
 import android.opengl.GLES30
@@ -74,6 +75,9 @@ class RenderThread(
 
     //video editor view
     private var editorRect = Rect()
+
+    //custom watermark Bitmap
+    private var customWaterMarkBitmap: Bitmap? = null
 
     override fun run() {
         Looper.prepare()
@@ -382,6 +386,13 @@ class RenderThread(
 
     fun setVideoEditorRect(rect: Rect) {
         editorRect = rect
+    }
+
+    fun setCustomWaterMark(bitmap: Bitmap?) {
+        customWaterMarkBitmap = bitmap
+        if (filter is WaterMarkFilter) {
+            (filter as WaterMarkFilter).customWaterMarkBitmap = bitmap
+        }
     }
 
     private fun releaseGL() {
