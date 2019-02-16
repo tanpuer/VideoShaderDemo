@@ -2,14 +2,9 @@ package com.example.templechen.videoshaderdemo.gl.sticker
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import com.bumptech.glide.Glide
 import com.example.templechen.videoshaderdemo.R
-import com.example.templechen.videoshaderdemo.gl.ActivityHandler
 import com.example.templechen.videoshaderdemo.gl.SimpleGLSurfaceView
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
@@ -21,7 +16,7 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
     private lateinit var mPlayer: ExoPlayerTool
-    private lateinit var mSticker: View
+    private lateinit var mStickerView: StickerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,16 +31,17 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         mPlayer.addVideoListener(this)
 
         //sticker
-        val imageView: ImageView = findViewById(R.id.image)
-        Glide.with(this).load(R.drawable.ic_screenroom_playlist_playing_gif).into(imageView)
-        initSticker(imageView)
+        mStickerView = findViewById(R.id.image)
+        Glide.with(this).load(R.drawable.ic_screenroom_playlist_playing_gif).into(mStickerView)
+        initSticker()
     }
 
-    private fun initSticker(view: View) {
-        mSticker = view
-        mSticker.setOnClickListener {
-            simpleGLSurfaceView.setCustomStickerView(mSticker)
-        }
+    private fun initSticker() {
+        mStickerView.setOnStickerViewClickListener(object : StickerView.OnStickerViewClickListener {
+            override fun onStickerViewClicked(stickerView: StickerView) {
+                simpleGLSurfaceView.setCustomStickerView(stickerView)
+            }
+        })
     }
 
     override fun onVideoSizeChanged(

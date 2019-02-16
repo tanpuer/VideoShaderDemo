@@ -9,7 +9,7 @@
             android:layout_centerInParent="true"
     />
 
-    <ImageView
+    <com.example.templechen.videoshaderdemo.gl.sticker.StickerView
             android:id="@+id/image"
             android:layout_width="100dp"
             android:layout_height="100dp"
