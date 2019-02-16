@@ -24,6 +24,8 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
     private lateinit var mStickerView: StickerView
     private var mStickerViewRectF = RectF()
     private lateinit var mActivityHandler: ActivityHandler
+    private var mVideoWidthZoomScale = 1f
+    private var mVideoHeightZoomScale = 1f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,24 +59,19 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
         mStickerView.setOnStickerViewScrollListener(object : StickerView.OnStickerViewScroll {
             override fun stickerViewScroll(stickerView: StickerView) {
                 //calculate StickerView's rect relative to SimpleGLSurfaceView
-                if (stickerView.left > simpleGLSurfaceView.left
-                    && stickerView.top > simpleGLSurfaceView.top
-                    && stickerView.right < simpleGLSurfaceView.right
-                    && stickerView.bottom < simpleGLSurfaceView.bottom
+                if (stickerView.left < simpleGLSurfaceView.right
+                    && stickerView.top < simpleGLSurfaceView.bottom
+                    && stickerView.right > simpleGLSurfaceView.left
+                    && stickerView.bottom > simpleGLSurfaceView.top
                 ) {
+                    val centerX = (simpleGLSurfaceView.left + simpleGLSurfaceView.right) / 2
+                    val centerY = ((simpleGLSurfaceView.top) + simpleGLSurfaceView.bottom) / 2
                     mStickerViewRectF.set(
-                        (stickerView.left - simpleGLSurfaceView.left) * 1.0f / simpleGLSurfaceView.width,
-                        (stickerView.top - simpleGLSurfaceView.top) * 1.0f / simpleGLSurfaceView.height,
-                        (stickerView.right - simpleGLSurfaceView.left) * 1.0f / simpleGLSurfaceView.width,
-                        (stickerView.bottom - simpleGLSurfaceView.top) * 1.0f / simpleGLSurfaceView.height
+                        (stickerView.left - centerX) * 2.0f / simpleGLSurfaceView.width,
+                        (centerY - stickerView.top) * 2.0f / simpleGLSurfaceView.height,
+                        (stickerView.right - centerX) * 2.0f / simpleGLSurfaceView.width,
+                        (centerY - stickerView.bottom) * 2.0f / simpleGLSurfaceView.height
                     )
-//
-//                    mStickerViewRectF.set(
-//                        (simpleGLSurfaceView.right - mStickerViewRectF.right) * 1.0f / simpleGLSurfaceView.width,
-//                        (simpleGLSurfaceView.bottom - mStickerViewRectF.bottom) * 1.0f / simpleGLSurfaceView.height,
-//                        (mStickerViewRectF.left - simpleGLSurfaceView.left) * 1.0f / simpleGLSurfaceView.width,
-//                        (mStickerViewRectF.top - simpleGLSurfaceView.top) * 1.0f / simpleGLSurfaceView.height
-//                    )
                     simpleGLSurfaceView.setCustomWaterMarkRectF(mStickerViewRectF)
                 }
             }
@@ -98,6 +95,9 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
             params.height = (viewWidth / videoRatio).toInt()
         }
         simpleGLSurfaceView.layoutParams = params
+
+        mVideoWidthZoomScale = params.width * 1.0f / width
+        mVideoHeightZoomScale = params.height * 1.0f / height
     }
 
     override fun onDestroy() {

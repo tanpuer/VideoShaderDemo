@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.RectF
 import android.opengl.GLES30
+import android.opengl.Matrix
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.R
 import java.nio.FloatBuffer
@@ -95,7 +96,13 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, waterMarkTextureId)
 
         GLES30.glUniform1i(uWaterMarkTextureSamplerLocation, 0)
-        GLES30.glUniformMatrix4fv(uWaterMarkMatrixLocation, 1, false, transformMatrix, 0)
+        GLES30.glUniformMatrix4fv(
+            uWaterMarkMatrixLocation,
+            1,
+            false,
+            transformMatrix,
+            0
+        )
 
         waterMarkFloatBuffer.position(0)
         GLES30.glEnableVertexAttribArray(aWaterMarkPositionLocation)
