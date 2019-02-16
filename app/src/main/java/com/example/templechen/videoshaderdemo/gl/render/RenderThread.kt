@@ -3,6 +3,7 @@ package com.example.templechen.videoshaderdemo.gl.render
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.SurfaceTexture
 import android.opengl.GLES30
 import android.opengl.Matrix
@@ -78,6 +79,7 @@ class RenderThread(
 
     //custom watermark Bitmap
     private var customWaterMarkBitmap: Bitmap? = null
+    private var customWaterMarkRect: RectF? = null
 
     override fun run() {
         Looper.prepare()
@@ -392,6 +394,13 @@ class RenderThread(
         customWaterMarkBitmap = bitmap
         if (filter is WaterMarkFilter) {
             (filter as WaterMarkFilter).customWaterMarkBitmap = bitmap
+        }
+    }
+
+    fun setCustomWaterRect(rectF: RectF) {
+        customWaterMarkRect = rectF
+        if (filter is WaterMarkFilter) {
+            (filter as WaterMarkFilter).resetWaterMarkRect(rectF)
         }
     }
 

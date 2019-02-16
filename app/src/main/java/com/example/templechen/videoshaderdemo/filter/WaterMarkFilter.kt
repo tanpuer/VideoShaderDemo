@@ -2,6 +2,7 @@ package com.example.templechen.videoshaderdemo.filter
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.RectF
 import android.opengl.GLES30
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.R
@@ -31,6 +32,21 @@ class WaterMarkFilter(context: Context, oesTextureId: Int) : BaseFilter(context,
 
     //custom watermark bitmap
     var customWaterMarkBitmap: Bitmap? = null
+
+    fun resetWaterMarkRect(rectF: RectF?) {
+        if (rectF != null) {
+            waterMarkFloatBuffer.clear()
+            val vertexData = floatArrayOf(
+                rectF.right, rectF.top, 1f, 1f,
+                rectF.left, rectF.top, 0f, 1f,
+                rectF.left, rectF.bottom, 0f, 0f,
+                rectF.right, rectF.top, 1f, 1f,
+                rectF.left, rectF.bottom, 0f, 0f,
+                rectF.right, rectF.bottom, 1f, 0f
+            )
+            waterMarkFloatBuffer = GLUtils.createBuffer(vertexData)
+        }
+    }
 
     override fun initProgram() {
         super.initProgram()

@@ -1,8 +1,8 @@
 package com.example.templechen.videoshaderdemo.gl.sticker
 
+import android.graphics.RectF
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import com.bumptech.glide.Glide
 import com.example.templechen.videoshaderdemo.R
 import com.example.templechen.videoshaderdemo.gl.SimpleGLSurfaceView
@@ -17,6 +17,7 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
     private lateinit var mPlayer: ExoPlayerTool
     private lateinit var mStickerView: StickerView
+    private var mStickerViewRectF = RectF()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +33,7 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
 
         //sticker
         mStickerView = findViewById(R.id.image)
-        Glide.with(this).load(R.drawable.ic_screenroom_playlist_playing_gif).into(mStickerView)
+        Glide.with(this).load(R.drawable.drawer_amino_logo).into(mStickerView)
         initSticker()
     }
 
@@ -40,6 +41,31 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener {
         mStickerView.setOnStickerViewClickListener(object : StickerView.OnStickerViewClickListener {
             override fun onStickerViewClicked(stickerView: StickerView) {
                 simpleGLSurfaceView.setCustomStickerView(stickerView)
+            }
+        })
+        mStickerView.setOnStickerViewScrollListener(object : StickerView.OnStickerViewScroll {
+            override fun stickerViewScroll(stickerView: StickerView) {
+                //calculate StickerView's rect relative to SimpleGLSurfaceView
+                if (stickerView.left > simpleGLSurfaceView.left
+                    && stickerView.top > simpleGLSurfaceView.top
+                    && stickerView.right < simpleGLSurfaceView.right
+                    && stickerView.bottom < simpleGLSurfaceView.bottom
+                ) {
+                    mStickerViewRectF.set(
+                        (stickerView.left - simpleGLSurfaceView.left) * 1.0f / simpleGLSurfaceView.width,
+                        (stickerView.top - simpleGLSurfaceView.top) * 1.0f / simpleGLSurfaceView.height,
+                        (stickerView.right - simpleGLSurfaceView.left) * 1.0f / simpleGLSurfaceView.width,
+                        (stickerView.bottom - simpleGLSurfaceView.top) * 1.0f / simpleGLSurfaceView.height
+                    )
+//
+//                    mStickerViewRectF.set(
+//                        (simpleGLSurfaceView.right - mStickerViewRectF.right) * 1.0f / simpleGLSurfaceView.width,
+//                        (simpleGLSurfaceView.bottom - mStickerViewRectF.bottom) * 1.0f / simpleGLSurfaceView.height,
+//                        (mStickerViewRectF.left - simpleGLSurfaceView.left) * 1.0f / simpleGLSurfaceView.width,
+//                        (mStickerViewRectF.top - simpleGLSurfaceView.top) * 1.0f / simpleGLSurfaceView.height
+//                    )
+                    simpleGLSurfaceView.setCustomWaterMarkRectF(mStickerViewRectF)
+                }
             }
         })
     }

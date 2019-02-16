@@ -15,6 +15,7 @@ class StickerView : ImageView, View.OnTouchListener {
 
     private var mGestureDetector: GestureDetector = GestureDetector(context, SingleTapConfirm(this))
     private var onStickerViewClickListener: OnStickerViewClickListener? = null
+    private var onStickerViewScroll: OnStickerViewScroll? = null
 
     init {
         setOnTouchListener(this)
@@ -35,6 +36,7 @@ class StickerView : ImageView, View.OnTouchListener {
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+            mStickerView.onStickerViewScroll?.stickerViewScroll(mStickerView)
             if (e1 != null && e2 != null) {
                 deltaX = e2.x - e1.x
                 deltaY = e2.y - e1.y
@@ -60,5 +62,13 @@ class StickerView : ImageView, View.OnTouchListener {
 
     interface OnStickerViewClickListener {
         fun onStickerViewClicked(stickerView: StickerView)
+    }
+
+    fun setOnStickerViewScrollListener(onStickerViewScroll: OnStickerViewScroll) {
+        this.onStickerViewScroll = onStickerViewScroll
+    }
+
+    interface OnStickerViewScroll {
+        fun stickerViewScroll(stickerView: StickerView)
     }
 }
