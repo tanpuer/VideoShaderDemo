@@ -11,7 +11,7 @@ import com.example.templechen.videoshaderdemo.gl.IGLInfoCallback
 import com.example.templechen.videoshaderdemo.gl.SimpleGLSurfaceView
 import com.example.templechen.videoshaderdemo.player.ExoPlayerTool
 
-class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLInfoCallback{
+class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLInfoCallback {
 
     companion object {
         private const val TAG = "StickerActivity"
@@ -19,7 +19,7 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
 
     private lateinit var simpleGLSurfaceView: SimpleGLSurfaceView
     private lateinit var fpsView: TextView
-    private lateinit var glVersionView : TextView
+    private lateinit var glVersionView: TextView
     private lateinit var mPlayer: ExoPlayerTool
     private lateinit var mStickerView: StickerView
     private var mStickerViewRectF = RectF()

@@ -25,17 +25,16 @@ class ActivityHandler(glInfoCallback: IGLInfoCallback) : Handler() {
     override fun handleMessage(msg: Message?) {
         val what = msg?.what
         val glInfoCallback = weakActivity.get()
-        if (glInfoCallback == null) {
-            return
-        }
-        when (what) {
-            MSG_GLES_VERSION -> {
-                glInfoCallback.updateGLVersion(msg.arg1)
+        if (glInfoCallback != null) {
+            when (what) {
+                MSG_GLES_VERSION -> {
+                    glInfoCallback.updateGLVersion(msg.arg1)
+                }
+                MSG_UPDATE_FPS -> {
+                    glInfoCallback.updateFps(msg.arg1, msg.arg2)
+                }
+                else -> throw IllegalArgumentException()
             }
-            MSG_UPDATE_FPS -> {
-                glInfoCallback.updateFps(msg.arg1, msg.arg2)
-            }
-            else -> throw IllegalArgumentException()
         }
     }
 
