@@ -3,6 +3,7 @@ package com.example.templechen.videoshaderdemo.gl
 import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.SurfaceTexture
 import android.util.AttributeSet
 import android.view.Choreographer
@@ -117,6 +118,11 @@ class SimpleGLTextureView :
 
     override fun setCustomStickerView(view: View?) {
         mStickerView = view
+    }
+
+    fun setCustomWaterMarkRectF(rectF: RectF) {
+        val renderHandler = renderThread?.mHandler
+        renderHandler?.setCustomWaterRect(rectF)
     }
 
 }

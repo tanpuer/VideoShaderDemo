@@ -3,6 +3,7 @@ package com.example.templechen.videoshaderdemo.gl.sticker
 import android.graphics.RectF
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.widget.Button
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.templechen.videoshaderdemo.R
@@ -24,8 +25,8 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
     private lateinit var mStickerView: StickerView
     private var mStickerViewRectF = RectF()
     private lateinit var mActivityHandler: ActivityHandler
-    private var mVideoWidthZoomScale = 1f
-    private var mVideoHeightZoomScale = 1f
+    private lateinit var mStartRecordBtn: Button
+    private lateinit var mStopRecordBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +43,22 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
 
         //sticker
         mStickerView = findViewById(R.id.image)
-        Glide.with(this).load(R.drawable.drawer_amino_logo).into(mStickerView)
+        Glide.with(this).load(R.drawable.ic_screenroom_playlist_playing_gif).into(mStickerView)
         initSticker()
 
         //fps and version
         fpsView = findViewById(R.id.fps)
         glVersionView = findViewById(R.id.gl_version)
+
+        //start and stop record btn
+        mStartRecordBtn = findViewById(R.id.start_btn)
+        mStartRecordBtn.setOnClickListener {
+            simpleGLSurfaceView.startRecording()
+        }
+        mStopRecordBtn = findViewById(R.id.stop_btn)
+        mStopRecordBtn.setOnClickListener {
+            simpleGLSurfaceView.stopRecording()
+        }
     }
 
     private fun initSticker() {
@@ -95,9 +106,6 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
             params.height = (viewWidth / videoRatio).toInt()
         }
         simpleGLSurfaceView.layoutParams = params
-
-        mVideoWidthZoomScale = params.width * 1.0f / width
-        mVideoHeightZoomScale = params.height * 1.0f / height
     }
 
     override fun onDestroy() {

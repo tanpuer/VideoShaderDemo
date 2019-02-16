@@ -294,18 +294,33 @@ class RenderThread(
             mInputWindowSurface.makeCurrentReadFrom(mWindowSurface)
             GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
-            GLES30.glBlitFramebuffer(
-                editorRect.left,
-                editorRect.top,
-                editorRect.right,
-                editorRect.bottom,
-                0,
-                0,
-                mInputWindowSurface.width,
-                mInputWindowSurface.height,
-                GLES30.GL_COLOR_BUFFER_BIT,
-                GLES30.GL_NEAREST
-            )
+            if (editorRect.width() > 0 && editorRect.height() >0) {
+                GLES30.glBlitFramebuffer(
+                    editorRect.left,
+                    editorRect.top,
+                    editorRect.right,
+                    editorRect.bottom,
+                    0,
+                    0,
+                    mInputWindowSurface.width,
+                    mInputWindowSurface.height,
+                    GLES30.GL_COLOR_BUFFER_BIT,
+                    GLES30.GL_NEAREST
+                )
+            } else {
+                GLES30.glBlitFramebuffer(
+                    0,
+                    0,
+                    mInputWindowSurface.width,
+                    mInputWindowSurface.height,
+                    0,
+                    0,
+                    mInputWindowSurface.width,
+                    mInputWindowSurface.height,
+                    GLES30.GL_COLOR_BUFFER_BIT,
+                    GLES30.GL_NEAREST
+                )
+            }
             val err = GLES30.glGetError()
             if (err != GLES30.GL_NO_ERROR) {
                 Log.w(TAG, "ERROR: glBlitFramebuffer failed: 0x" + Integer.toHexString(err))
@@ -359,7 +374,12 @@ class RenderThread(
             outputFile.delete()
             outputFile = File(mContext.cacheDir, "gltest.mp4")
         }
-        val encoder = VideoEncoder(WIDTH, HEIGHT, BIT_RATE, outputFile)
+        //if set editorRect, then 1280 * 720, if not set, the same size of mWindowSurface
+        val encoder = VideoEncoder(
+            if (editorRect.width() > 0 && editorRect.height() >0) WIDTH else mWindowSurface.width,
+            if (editorRect.width() > 0 && editorRect.height() >0) HEIGHT else mWindowSurface.height,
+            BIT_RATE,
+            outputFile)
         mInputWindowSurface = WindowSurface(mEglCore, encoder.mInputSurface, true)
         mVideoEncoderThread = VideoEncoderThread(encoder)
         mVideoEncoderThread.start()
