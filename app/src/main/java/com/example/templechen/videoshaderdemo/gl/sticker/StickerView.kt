@@ -7,15 +7,15 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 
-class StickerView : ImageView, View.OnTouchListener {
+class StickerView : ImageView, View.OnTouchListener, IStickerView {
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     private var mGestureDetector: GestureDetector = GestureDetector(context, SingleTapConfirm(this))
-    private var onStickerViewClickListener: OnStickerViewClickListener? = null
-    private var onStickerViewScroll: OnStickerViewScroll? = null
+    private var onStickerViewClickListener: IStickerView.OnStickerViewClickListener? = null
+    private var onStickerViewScroll: IStickerView.OnStickerViewScroll? = null
 
     init {
         setOnTouchListener(this)
@@ -57,19 +57,15 @@ class StickerView : ImageView, View.OnTouchListener {
 
     }
 
-    fun setOnStickerViewClickListener(onStickerViewClickListener: OnStickerViewClickListener) {
+    override fun setOnStickerViewClickListener(onStickerViewClickListener: IStickerView.OnStickerViewClickListener) {
         this.onStickerViewClickListener = onStickerViewClickListener
     }
 
-    interface OnStickerViewClickListener {
-        fun onStickerViewClicked(stickerView: StickerView)
-    }
-
-    fun setOnStickerViewScrollListener(onStickerViewScroll: OnStickerViewScroll) {
+    override fun setOnStickerViewScrollListener(onStickerViewScroll: IStickerView.OnStickerViewScroll) {
         this.onStickerViewScroll = onStickerViewScroll
     }
 
-    interface OnStickerViewScroll {
-        fun stickerViewScroll(stickerView: StickerView)
+    override fun getView(): View {
+        return this
     }
 }

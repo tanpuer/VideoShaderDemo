@@ -62,12 +62,12 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
     }
 
     private fun initSticker() {
-        mStickerView.setOnStickerViewClickListener(object : StickerView.OnStickerViewClickListener {
+        mStickerView.setOnStickerViewClickListener(object : IStickerView.OnStickerViewClickListener {
             override fun onStickerViewClicked(stickerView: StickerView) {
                 simpleGLSurfaceView.setCustomStickerView(stickerView)
             }
         })
-        mStickerView.setOnStickerViewScrollListener(object : StickerView.OnStickerViewScroll {
+        mStickerView.setOnStickerViewScrollListener(object : IStickerView.OnStickerViewScroll {
             override fun stickerViewScroll(stickerView: StickerView) {
                 //calculate StickerView's rect relative to SimpleGLSurfaceView
                 if (stickerView.left < simpleGLSurfaceView.right
@@ -75,6 +75,7 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
                     && stickerView.right > simpleGLSurfaceView.left
                     && stickerView.bottom > simpleGLSurfaceView.top
                 ) {
+                    //gl coordinate is (-1, -1)-> (1,1); texture coordinate is (0,0)->(1,1) , be careful
                     val centerX = (simpleGLSurfaceView.left + simpleGLSurfaceView.right) / 2
                     val centerY = ((simpleGLSurfaceView.top) + simpleGLSurfaceView.bottom) / 2
                     mStickerViewRectF.set(
