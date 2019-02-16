@@ -13,30 +13,6 @@ class StickerView : ImageView, View.OnTouchListener {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-//    private var lastX = 0f
-//    private var lastY = 0f
-//
-//    override fun onTouchEvent(event: MotionEvent?): Boolean {
-//        when (event?.action) {
-//            MotionEvent.ACTION_DOWN -> {
-//                lastX = event.x
-//                lastY = event.y
-//            }
-//            MotionEvent.ACTION_MOVE -> {
-//                val offsetX = event.x - lastX
-//                val offsetY = event.y - lastY
-//                layout(
-//                    (left + offsetX).toInt(),
-//                    (top + offsetY).toInt(),
-//                    (right + offsetX).toInt(),
-//                    (bottom + offsetY).toInt()
-//                )
-//            }
-//
-//        }
-//        return true
-//    }
-
     private var mGestureDetector: GestureDetector = GestureDetector(context, SingleTapConfirm(this))
     private var onStickerViewClickListener: OnStickerViewClickListener? = null
 
