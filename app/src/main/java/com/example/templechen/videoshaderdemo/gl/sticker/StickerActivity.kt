@@ -22,7 +22,7 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
     private lateinit var fpsView: TextView
     private lateinit var glVersionView: TextView
     private lateinit var mPlayer: ExoPlayerTool
-    private lateinit var mStickerView: StickerView
+    private lateinit var mStickerView: StickerImageView
     private var mStickerViewRectF = RectF()
     private lateinit var mActivityHandler: ActivityHandler
     private lateinit var mStartRecordBtn: Button
@@ -69,7 +69,7 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
         })
         mStickerView.setOnStickerViewScrollListener(object : IStickerView.OnStickerViewScroll {
             override fun stickerViewScroll(stickerView: IStickerView) {
-                //calculate StickerView's rect relative to SimpleGLSurfaceView
+                //calculate StickerImageView's rect relative to SimpleGLSurfaceView
                 if (stickerView.getView().left < simpleGLSurfaceView.right
                     && stickerView.getView().top < simpleGLSurfaceView.bottom
                     && stickerView.getView().right > simpleGLSurfaceView.left

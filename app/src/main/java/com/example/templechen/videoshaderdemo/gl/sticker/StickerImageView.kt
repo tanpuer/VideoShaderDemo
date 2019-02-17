@@ -7,7 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 
-class StickerView : ImageView, View.OnTouchListener, IStickerView {
+class StickerImageView : ImageView, View.OnTouchListener, IStickerView {
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -25,7 +25,7 @@ class StickerView : ImageView, View.OnTouchListener, IStickerView {
         return mGestureDetector.onTouchEvent(event)
     }
 
-    private class SingleTapConfirm(stickerView: StickerView) : GestureDetector.SimpleOnGestureListener() {
+    private class SingleTapConfirm(stickerView: StickerImageView) : GestureDetector.SimpleOnGestureListener() {
 
         private var mStickerView = stickerView
         private var deltaX = 0f

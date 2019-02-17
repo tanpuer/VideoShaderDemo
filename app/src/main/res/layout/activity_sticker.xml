@@ -12,7 +12,7 @@
     <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <com.example.templechen.videoshaderdemo.gl.sticker.StickerView
+        <com.example.templechen.videoshaderdemo.gl.sticker.StickerImageView
                 android:id="@+id/image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
