@@ -21,8 +21,7 @@ class StickerTextView : FrameLayout, View.OnTouchListener {
     private var topRightView: LineView = parentView.findViewById(R.id.top_right_view)
     private var bottomLeftView: LineView = parentView.findViewById(R.id.bottom_left_view)
     private var bottomRightView: LineView = parentView.findViewById(R.id.bottom_right_view)
-    private var centerView: LineView = parentView.findViewById(R.id.center_view)
-    //    private var textView: TextView = parentView.findViewById(R.id.text)
+    private var textView: TextView = parentView.findViewById(R.id.text)
     private var paint: Paint = Paint()
 
     init {
@@ -34,9 +33,8 @@ class StickerTextView : FrameLayout, View.OnTouchListener {
         topRightView.lineType = LineView.LINE_TOP_RIGHT_TYPE
         bottomLeftView.lineType = LineView.LINE_BOTTOM_LEFT_TYPE
         bottomRightView.lineType = LineView.LINE_BOTTOM_RIGHT_TYPE
-        centerView.lineType = LineView.LINE_CENTER_TYPE
         addView(parentView)
-        setOnTouchListener(this)
+        textView.setOnTouchListener(this)
     }
 
     private var mGestureDetector: GestureDetector = GestureDetector(context, SingleTapConfirm(this))
