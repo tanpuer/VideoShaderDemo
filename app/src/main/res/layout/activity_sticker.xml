@@ -17,6 +17,14 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
         />
+
+        <com.example.templechen.videoshaderdemo.gl.sticker.StickerTextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+        >
+        </com.example.templechen.videoshaderdemo.gl.sticker.StickerTextView>
     </FrameLayout>
 
     <TextView

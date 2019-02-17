@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="100dp"
+             android:layout_height="50dp"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:minWidth="20dp"
+             android:minHeight="20dp"
+             android:background="#44000000"
+>
+
+    <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="Test sticker"
+            android:textSize="22dp"
+            android:layout_gravity="center"
+    />
+
+    <com.example.templechen.videoshaderdemo.gl.sticker.LineView
+            android:id="@+id/top_left_view"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="start|top"
+    />
+
+    <com.example.templechen.videoshaderdemo.gl.sticker.LineView
+            android:id="@+id/top_right_view"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="end|top"
+    />
+
+    <com.example.templechen.videoshaderdemo.gl.sticker.LineView
+            android:id="@+id/bottom_left_view"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="start|bottom"
+    />
+
+    <com.example.templechen.videoshaderdemo.gl.sticker.LineView
+            android:id="@+id/bottom_right_view"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="end|bottom"
+    />
+
+    <com.example.templechen.videoshaderdemo.gl.sticker.LineView
+            android:id="@+id/center_view"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+    />
+
+</FrameLayout>
