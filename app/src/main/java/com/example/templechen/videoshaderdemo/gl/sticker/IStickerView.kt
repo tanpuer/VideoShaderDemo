@@ -11,10 +11,10 @@ interface IStickerView {
     fun setOnStickerViewScrollListener(onStickerViewScroll: IStickerView.OnStickerViewScroll)
     
     interface OnStickerViewClickListener {
-        fun onStickerViewClicked(stickerView: StickerView)
+        fun onStickerViewClicked(stickerView: IStickerView)
     }
 
     interface OnStickerViewScroll {
-        fun stickerViewScroll(stickerView: StickerView)
+        fun stickerViewScroll(stickerView: IStickerView)
     }
 }

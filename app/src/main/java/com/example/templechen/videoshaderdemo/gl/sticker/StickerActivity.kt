@@ -63,26 +63,26 @@ class StickerActivity : AppCompatActivity(), ExoPlayerTool.IVideoListener, IGLIn
 
     private fun initSticker() {
         mStickerView.setOnStickerViewClickListener(object : IStickerView.OnStickerViewClickListener {
-            override fun onStickerViewClicked(stickerView: StickerView) {
-                simpleGLSurfaceView.setCustomStickerView(stickerView)
+            override fun onStickerViewClicked(stickerView: IStickerView) {
+                simpleGLSurfaceView.setCustomStickerView(stickerView.getView())
             }
         })
         mStickerView.setOnStickerViewScrollListener(object : IStickerView.OnStickerViewScroll {
-            override fun stickerViewScroll(stickerView: StickerView) {
+            override fun stickerViewScroll(stickerView: IStickerView) {
                 //calculate StickerView's rect relative to SimpleGLSurfaceView
-                if (stickerView.left < simpleGLSurfaceView.right
-                    && stickerView.top < simpleGLSurfaceView.bottom
-                    && stickerView.right > simpleGLSurfaceView.left
-                    && stickerView.bottom > simpleGLSurfaceView.top
+                if (stickerView.getView().left < simpleGLSurfaceView.right
+                    && stickerView.getView().top < simpleGLSurfaceView.bottom
+                    && stickerView.getView().right > simpleGLSurfaceView.left
+                    && stickerView.getView().bottom > simpleGLSurfaceView.top
                 ) {
                     //gl coordinate is (-1, -1)-> (1,1); texture coordinate is (0,0)->(1,1) , be careful
                     val centerX = (simpleGLSurfaceView.left + simpleGLSurfaceView.right) / 2
                     val centerY = ((simpleGLSurfaceView.top) + simpleGLSurfaceView.bottom) / 2
                     mStickerViewRectF.set(
-                        (stickerView.left - centerX) * 2.0f / simpleGLSurfaceView.width,
-                        (centerY - stickerView.top) * 2.0f / simpleGLSurfaceView.height,
-                        (stickerView.right - centerX) * 2.0f / simpleGLSurfaceView.width,
-                        (centerY - stickerView.bottom) * 2.0f / simpleGLSurfaceView.height
+                        (stickerView.getView().left - centerX) * 2.0f / simpleGLSurfaceView.width,
+                        (centerY - stickerView.getView().top) * 2.0f / simpleGLSurfaceView.height,
+                        (stickerView.getView().right - centerX) * 2.0f / simpleGLSurfaceView.width,
+                        (centerY - stickerView.getView().bottom) * 2.0f / simpleGLSurfaceView.height
                     )
                     simpleGLSurfaceView.setCustomWaterMarkRectF(mStickerViewRectF)
                 }
