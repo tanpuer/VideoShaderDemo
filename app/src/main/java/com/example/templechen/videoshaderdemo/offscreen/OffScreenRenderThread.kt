@@ -27,7 +27,8 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
     private var mFile = file
     private var mOffScreenActivityHandler = offScreenActivityHandler
     private lateinit var mEglCore: EglCore
-    private lateinit var mOffScreenWindowSurface: OffscreenSurface
+//    private lateinit var mOffScreenWindowSurface: OffscreenSurface
+    private lateinit var mOffScreenWindowSurface: WindowSurface
     private lateinit var mOutOutSurface: Surface
     private var mOESTextureId = -1
     private lateinit var mSurfaceTexture: SurfaceTexture
@@ -72,9 +73,15 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
         }
     }
 
+    fun surfaceCreated(surface: Surface) {
+        mOffScreenWindowSurface = WindowSurface(mEglCore, surface, false)
+        prepareGL()
+    }
+
     fun prepareGL() {
         mVideoDecoder = VideoDecoder(mFile)
-        mOffScreenWindowSurface = OffscreenSurface(mEglCore, mVideoDecoder.mVideoWidth, mVideoDecoder.mVideoHeight)
+//        mOffScreenWindowSurface = OffscreenSurface(mEglCore, mVideoDecoder.mVideoWidth, mVideoDecoder.mVideoHeight)
+
         mOffScreenWindowSurface.makeCurrent()
 
         mOESTextureId = GLUtils.createOESTextureObject()
@@ -91,6 +98,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
         initEncoder()
 
         filter = BaseFilter(mContext, mOESTextureId)
+        filter.initProgram()
     }
 
     fun renderFrame() {
@@ -108,6 +116,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 
     override fun decodeFrameEnd() {
         mVideoEncoder.drainEncoderWithNoTimeOut(true)
+        mInputWindowSurface.release()
         mOffScreenActivityHandler.sendOffscreenEnd()
     }
 
@@ -121,33 +130,33 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
             mInputWindowSurface.makeCurrentReadFrom(mOffScreenWindowSurface)
             GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
-            if (editorRect.width() > 0 && editorRect.height() >0) {
-                GLES30.glBlitFramebuffer(
-                    editorRect.left,
-                    editorRect.top,
-                    editorRect.right,
-                    editorRect.bottom,
-                    0,
-                    0,
-                    mInputWindowSurface.width,
-                    mInputWindowSurface.height,
-                    GLES30.GL_COLOR_BUFFER_BIT,
-                    GLES30.GL_NEAREST
-                )
-            } else {
-                GLES30.glBlitFramebuffer(
-                    0,
-                    0,
-                    mInputWindowSurface.width,
-                    mInputWindowSurface.height,
-                    0,
-                    0,
-                    mInputWindowSurface.width,
-                    mInputWindowSurface.height,
-                    GLES30.GL_COLOR_BUFFER_BIT,
-                    GLES30.GL_NEAREST
-                )
-            }
+//            if (editorRect.width() > 0 && editorRect.height() >0) {
+//                GLES30.glBlitFramebuffer(
+//                    editorRect.left,
+//                    editorRect.top,
+//                    editorRect.right,
+//                    editorRect.bottom,
+//                    0,
+//                    0,
+//                    mInputWindowSurface.width,
+//                    mInputWindowSurface.height,
+//                    GLES30.GL_COLOR_BUFFER_BIT,
+//                    GLES30.GL_NEAREST
+//                )
+//            } else {
+//                GLES30.glBlitFramebuffer(
+//                    0,
+//                    0,
+//                    mInputWindowSurface.width,
+//                    mInputWindowSurface.height,
+//                    0,
+//                    0,
+//                    mInputWindowSurface.width,
+//                    mInputWindowSurface.height,
+//                    GLES30.GL_COLOR_BUFFER_BIT,
+//                    GLES30.GL_NEAREST
+//                )
+//            }
             val err = GLES30.glGetError()
             if (err != GLES30.GL_NO_ERROR) {
                 Log.w(TAG, "ERROR: glBlitFramebuffer failed: 0x" + Integer.toHexString(err))
@@ -209,7 +218,9 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 
         mSurfaceTexture.getTransformMatrix(filter.transformMatrix)
         mSurfaceTexture.updateTexImage()
-//        filter.drawFrame()
+        Log.d(TAG, GLUtils.checkGlError("draw start").toString())
+        filter.drawFrame()
+        Log.d(TAG, GLUtils.checkGlError("draw end").toString())
     }
 
 }

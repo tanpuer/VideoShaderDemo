@@ -21,5 +21,10 @@
             android:layout_centerHorizontal="true"
     />
 
+    <SurfaceView
+            android:id="@+id/surface_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
+
 
 </RelativeLayout>

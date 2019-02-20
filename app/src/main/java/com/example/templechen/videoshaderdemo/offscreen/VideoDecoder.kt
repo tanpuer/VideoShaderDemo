@@ -10,6 +10,8 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.lang.RuntimeException
 
+
+
 class VideoDecoder(file: File) {
 
     companion object {
@@ -60,61 +62,66 @@ class VideoDecoder(file: File) {
         mMediaCodec.start()
 
         //begin
+        val TIMEOUT_USEC = 0L
         var mBufferInfo = MediaCodec.BufferInfo()
-        var inputDone = false
         var outputDone = false
+        var inputDone = false
+
         while (!outputDone) {
-            mFrameCallback?.decodeFrameBegin()
+
             //feed more data to the decoder
             if (!inputDone) {
                 val inputBufferIndex = mMediaCodec.dequeueInputBuffer(-1)
                 if (inputBufferIndex > 0) {
                     val inputBuffer = mMediaCodec.getInputBuffer(inputBufferIndex)
-                    val chunkSize = mMediaExtractor.readSampleData(inputBuffer!!, 0)
+                    // Read the sample data into the ByteBuffer.  This neither respects nor
+                    // updates inputBuf's position, limit, etc.
+                    val chunkSize = mMediaExtractor.readSampleData(inputBuffer, 0)
                     if (chunkSize < 0) {
-                        //end of stream
+                        //End of Stream
                         mMediaCodec.queueInputBuffer(inputBufferIndex, 0, 0, 0L, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
                         inputDone = true
-                        Log.d(TAG, "sent input EOS")
+                        Log.d(TAG, "doExtract: " + "inputDone")
                     } else {
                         if (mMediaExtractor.sampleTrackIndex != mVideoTrack) {
-                            Log.w(
-                                TAG, "WEIRD: got sample from track " +
-                                        mMediaExtractor.sampleTrackIndex + ", expected " + mVideoTrack
-                            )
+                            Log.d(TAG, "doExtract: " + "get wrong trackIndex!!!")
                         }
-                        val pts = mMediaExtractor.sampleTime
-                        mMediaCodec.queueInputBuffer(inputBufferIndex, 0, chunkSize, pts, 0)
+                        val presentationTimeUs = mMediaExtractor.sampleTime
+                        mMediaCodec.queueInputBuffer(inputBufferIndex, 0, chunkSize, presentationTimeUs, 0)
                         mMediaExtractor.advance()
                     }
                 } else {
-                    Log.d(TAG, "input buffer not available")
+                    Log.d(TAG, "doExtract: " + " buffer index not available")
                 }
             }
+
             if (!outputDone) {
-                val status = mMediaCodec.dequeueOutputBuffer(mBufferInfo, 0)
-                when {
-                    status == MediaCodec.INFO_TRY_AGAIN_LATER -> {
-                        Log.d(TAG, "no output from decoder available")
+                val decoderStatus = mMediaCodec.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC)
+                if (decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                    // no output available yet
+                    Log.d(TAG, "no output from decoder available")
+                } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                    val newFormat = mMediaCodec.outputFormat
+                    Log.d(TAG, "decoder output format changed: $newFormat")
+                } else if (decoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                    Log.d(TAG, "doExtract: output buffers changed")
+                } else if (decoderStatus < 0) {
+                    throw RuntimeException(
+                        "unexpected result from decoder.dequeueOutputBuffer: $decoderStatus"
+                    )
+                } else { // decoderStatus >= 0
+                    if (mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                        Log.d(TAG, "output EOS")
+                        outputDone = true
                     }
-                    status == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
-                        Log.d(TAG, "decoder output buffers changed")
+
+                    val doRender = mBufferInfo.size !== 0
+
+                    if (doRender && mFrameCallback != null) {
+                        mFrameCallback?.decodeFrameBegin()
                     }
-                    status < 0 -> {
-                        throw RuntimeException(
-                            "unexpected result from decoder.dequeueOutputBuffer: " +
-                                    status
-                        )
-                    }
-                    else -> {
-                        if (mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                            outputDone = true
-                        }
-                        mMediaCodec.releaseOutputBuffer(status, mBufferInfo.size != 0)
-                        if (mBufferInfo.size > 0) {
-                            mFrameCallback?.decodeOneFrame(mBufferInfo.presentationTimeUs)
-                        }
-                    }
+                    mMediaCodec.releaseOutputBuffer(decoderStatus, doRender)
+                    mFrameCallback?.decodeOneFrame(mBufferInfo.presentationTimeUs)
                 }
             }
         }

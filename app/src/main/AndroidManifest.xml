@@ -31,6 +31,7 @@
         <activity android:name=".PurePlayActivity"/>
         <activity android:name="com.example.templechen.videoshaderdemo.gl.sticker.StickerActivity"/>
         <activity android:name=".offscreen.OffScreenActivity"/>
+        <activity android:name=".offscreen.render.OffScreenRenderActivity"/>
     </application>
 
 </manifest>

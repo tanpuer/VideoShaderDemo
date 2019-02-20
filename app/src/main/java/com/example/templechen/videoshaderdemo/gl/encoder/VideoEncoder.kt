@@ -109,6 +109,7 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
                 if (!endOfStream) {
                     break     // out of while
                 } else {
+                    break
                     Log.d(TAG, "no output available, spinning to await EOS")
                 }
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
