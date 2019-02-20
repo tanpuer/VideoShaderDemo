@@ -63,10 +63,10 @@ class VideoDecoder(file: File) {
         var mBufferInfo = MediaCodec.BufferInfo()
         var inputDone = false
         var outputDone = false
-        while (!inputDone) {
+        while (!outputDone) {
             mFrameCallback?.decodeFrameBegin()
             //feed more data to the decoder
-            if (!outputDone) {
+            if (!inputDone) {
                 val inputBufferIndex = mMediaCodec.dequeueInputBuffer(-1)
                 if (inputBufferIndex > 0) {
                     val inputBuffer = mMediaCodec.getInputBuffer(inputBufferIndex)
@@ -98,7 +98,7 @@ class VideoDecoder(file: File) {
                         Log.d(TAG, "no output from decoder available")
                     }
                     status == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
-                        Log.d(TAG, "decoder output buffers changed");
+                        Log.d(TAG, "decoder output buffers changed")
                     }
                     status < 0 -> {
                         throw RuntimeException(

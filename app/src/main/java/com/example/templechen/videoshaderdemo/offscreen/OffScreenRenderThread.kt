@@ -13,7 +13,6 @@ import com.example.templechen.videoshaderdemo.gl.egl.EglCore
 import com.example.templechen.videoshaderdemo.gl.egl.OffscreenSurface
 import com.example.templechen.videoshaderdemo.gl.egl.WindowSurface
 import com.example.templechen.videoshaderdemo.gl.encoder.VideoEncoder
-import com.example.templechen.videoshaderdemo.gl.encoder.VideoEncoderThread
 import java.io.File
 import java.lang.Exception
 
@@ -44,8 +43,9 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
     //recording
     private var recordingEnable = false
     private lateinit var mInputWindowSurface: WindowSurface
-    private lateinit var mVideoEncoderThread: VideoEncoderThread
+//    private lateinit var mVideoEncoderThread: VideoEncoderThread
     var editorRect = Rect(0, 0, 0, 0)
+    private lateinit var mVideoEncoder: VideoEncoder
 
     override fun run() {
         Looper.prepare()
@@ -107,7 +107,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
     }
 
     override fun decodeFrameEnd() {
-        mVideoEncoderThread.stopRecording()
+        mVideoEncoder.drainEncoderWithNoTimeOut(true)
         mOffScreenActivityHandler.sendOffscreenEnd()
     }
 
@@ -118,7 +118,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 
         //recording
         if (recordingEnable) {
-            mVideoEncoderThread.frameAvailableSoon()
             mInputWindowSurface.makeCurrentReadFrom(mOffScreenWindowSurface)
             GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
@@ -155,6 +154,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
             }
             mInputWindowSurface.setPresentationTime(pts)
             mInputWindowSurface.swapBuffers()
+            mVideoEncoder.drainEncoderWithNoTimeOut(false)
             mOffScreenWindowSurface.makeCurrent()
         }
         val swapResult: Boolean = mOffScreenWindowSurface.swapBuffers()
@@ -181,16 +181,16 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
             outputFile = File(mContext.cacheDir, "gltest.mp4")
         }
         //if set editorRect, then 1280 * 720, if not set, the same size of mWindowSurface
-        val encoder = VideoEncoder(
+        mVideoEncoder = VideoEncoder(
             if (editorRect.width() > 0 && editorRect.height() > 0) WIDTH else mOffScreenWindowSurface.width,
             if (editorRect.width() > 0 && editorRect.height() > 0) HEIGHT else mOffScreenWindowSurface.height,
             BIT_RATE,
             outputFile
         )
-        mInputWindowSurface = WindowSurface(mEglCore, encoder.mInputSurface, true)
-        mVideoEncoderThread = VideoEncoderThread(encoder)
-        mVideoEncoderThread.start()
-        mVideoEncoderThread.waitUntilReady()
+        mInputWindowSurface = WindowSurface(mEglCore, mVideoEncoder.mInputSurface, true)
+//        mVideoEncoderThread = VideoEncoderThread(encoder)
+//        mVideoEncoderThread.start()
+//        mVideoEncoderThread.waitUntilReady()
         recordingEnable = true
     }
 
@@ -209,7 +209,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 
         mSurfaceTexture.getTransformMatrix(filter.transformMatrix)
         mSurfaceTexture.updateTexImage()
-        filter.drawFrame()
+//        filter.drawFrame()
     }
 
 }

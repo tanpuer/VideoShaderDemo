@@ -12,7 +12,7 @@ class OffScreenActivityHandler(offScreenActivity: OffScreenActivity) : Handler()
     }
 
     fun sendOffscreenEnd() {
-        obtainMessage(MSG_OFF_SCREEN_END)
+        sendMessage(obtainMessage(MSG_OFF_SCREEN_END))
     }
 
     override fun handleMessage(msg: Message?) {

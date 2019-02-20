@@ -25,6 +25,7 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
     private var format: MediaFormat = MediaFormat.createVideoFormat(MIME_TYPE, width, height)
     private var mTrackIndex = -1
     private var mMuxerStarted = false
+    private var mFrameIndex = 0
 
     init {
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
@@ -87,7 +88,56 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
                     encodedData.position(mBufferInfo.offset)
                     encodedData.limit(mBufferInfo.offset + mBufferInfo.size)
                     mMuxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo)
+                    Log.d(TAG, mFrameIndex++.toString())
+                }
+                mEncoder.releaseOutputBuffer(encoderStatus, false)
+                if ((mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0)) {
+                    break     // out of while
+                }
+            }
+        }
+    }
 
+    fun drainEncoderWithNoTimeOut(endOfStream: Boolean) {
+        if (endOfStream) {
+            mEncoder.signalEndOfInputStream()
+        }
+        while (true) {
+            val encoderStatus = mEncoder.dequeueOutputBuffer(mBufferInfo, 0)
+            if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                // no output available yet
+                if (!endOfStream) {
+                    break     // out of while
+                } else {
+                    Log.d(TAG, "no output available, spinning to await EOS")
+                }
+            } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                if (mMuxerStarted) {
+                    throw RuntimeException("format changed twice")
+                }
+                val mediaFormat = mEncoder.outputFormat
+                mTrackIndex = mMuxer.addTrack(mediaFormat)
+                mMuxer.start()
+                mMuxerStarted = true
+            } else if (encoderStatus < 0) {
+                //ignore
+            } else {
+                val encodedData = mEncoder.getOutputBuffer(encoderStatus)
+                if (encodedData == null) {
+                    throw RuntimeException("encoderOutputBuffer $encoderStatus is null")
+                }
+                if ((mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0)) {
+                    mBufferInfo.size = 0
+                }
+                if (mBufferInfo.size != 0) {
+                    if (!mMuxerStarted) {
+                        throw RuntimeException("muxer hasn't started")
+                    }
+                    // adjust the ByteBuffer values to match BufferInfo (not needed?)
+                    encodedData.position(mBufferInfo.offset)
+                    encodedData.limit(mBufferInfo.offset + mBufferInfo.size)
+                    mMuxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo)
+                    Log.d(TAG, mFrameIndex++.toString())
                 }
                 mEncoder.releaseOutputBuffer(encoderStatus, false)
                 if ((mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0)) {

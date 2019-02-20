@@ -58,7 +58,7 @@ class OffScreenActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun setDuration() {
-        mDurationText.text = "Duration : ${System.currentTimeMillis() - startTime}"
+        mDurationText.text = "Duration : ${(System.currentTimeMillis() - startTime)/1000f}"
     }
 
     override fun onClick(v: View?) {
