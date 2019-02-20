@@ -34,5 +34,14 @@
             android:text="Sticker"
     />
 
+    <Button
+            android:id="@+id/offScreenBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:layout_below="@id/stickerBtn"
+            android:layout_centerHorizontal="true"
+            android:text="OffScreen"
+    />
 
 </RelativeLayout>
