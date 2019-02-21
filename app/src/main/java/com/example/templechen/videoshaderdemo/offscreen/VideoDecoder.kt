@@ -62,18 +62,20 @@ class VideoDecoder(file: File) {
         mMediaCodec.start()
 
         //begin
-        val TIMEOUT_USEC = 0L
+        val TIMEOUT_USEC = 1000L
         var mBufferInfo = MediaCodec.BufferInfo()
         var outputDone = false
         var inputDone = false
 
         mFrameCallback?.decodeFrameBegin()
 
+        val startMs = System.currentTimeMillis()
+
         while (!outputDone) {
 
             //feed more data to the decoder
             if (!inputDone) {
-                val inputBufferIndex = mMediaCodec.dequeueInputBuffer(-1)
+                val inputBufferIndex = mMediaCodec.dequeueInputBuffer(TIMEOUT_USEC)
                 if (inputBufferIndex > 0) {
                     val inputBuffer = mMediaCodec.getInputBuffer(inputBufferIndex)
                     // Read the sample data into the ByteBuffer.  This neither respects nor
@@ -119,6 +121,8 @@ class VideoDecoder(file: File) {
 
                     val doRender = mBufferInfo.size !== 0
 
+//                    decodeDelay(mBufferInfo, startMs)
+
                     mMediaCodec.releaseOutputBuffer(decoderStatus, doRender)
                     if (doRender && mBufferInfo.presentationTimeUs >0) {
                         mFrameCallback?.decodeOneFrame(mBufferInfo.presentationTimeUs)
@@ -136,6 +140,19 @@ class VideoDecoder(file: File) {
         fun decodeFrameBegin() {}
         fun decodeOneFrame(pts: Long) {}
         fun decodeFrameEnd() {}
+    }
+
+    private fun decodeDelay(bufferInfo: MediaCodec.BufferInfo, startMs: Long) {
+        val delayTime = bufferInfo.presentationTimeUs / 1000 - (System.currentTimeMillis() - startMs)
+        if (delayTime > 0) {
+            Log.d(TAG, "decodeDelay: video delay $delayTime")
+            try {
+                Thread.sleep(delayTime)
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+        }
     }
 
 }

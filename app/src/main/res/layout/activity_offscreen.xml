@@ -9,7 +9,7 @@
             android:layout_height="wrap_content"
             android:textAllCaps="false"
             android:layout_centerHorizontal="true"
-            android:text="Start"
+            android:text="Off Screen Start"
     />
 
     <TextView

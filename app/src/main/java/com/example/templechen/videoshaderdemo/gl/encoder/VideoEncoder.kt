@@ -34,6 +34,7 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
         format.setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
         format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE)
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, I_FRAME_INTERVAL)
+        format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)
         mEncoder = MediaCodec.createEncoderByType(MIME_TYPE)
         mEncoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
         mInputSurface = mEncoder.createInputSurface()
@@ -92,8 +93,6 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
                     encodedData.position(mBufferInfo.offset)
                     encodedData.limit(mBufferInfo.offset + mBufferInfo.size)
                     mMuxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo)
-                    Log.d(TAG, mBufferInfo.flags.toString())
-                    Log.d(TAG, mFrameIndex++.toString())
                 }
                 mEncoder.releaseOutputBuffer(encoderStatus, false)
                 if ((mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0)) {
@@ -115,7 +114,6 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
                 if (!endOfStream) {
                     break     // out of while
                 } else {
-                    break
                     Log.d(TAG, "no output available, spinning to await EOS")
                 }
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
