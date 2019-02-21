@@ -16,7 +16,7 @@ import java.io.File
 import java.lang.Exception
 
 class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandler: OffScreenActivityHandler) :
-    Thread(), VideoDecoder.FrameCallback {
+    Thread(), FrameCallback {
 
     companion object {
         const val TAG = "OffScreenRenderThread"
@@ -28,7 +28,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
     private var mOffScreenActivityHandler = offScreenActivityHandler
     private lateinit var mEglCore: EglCore
     private lateinit var mOffScreenWindowSurface: OffscreenSurface
-    //    private lateinit var mOffScreenWindowSurface: WindowSurface
     private lateinit var mOutOutSurface: Surface
     private var mOESTextureId = -1
     private lateinit var mSurfaceTexture: SurfaceTexture
@@ -36,7 +35,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
     private var mStartLock = Object()
     private var mReady = false
     private lateinit var filter: BaseFilter
-    private var frames = 0
 
     //video decode
     private lateinit var mVideoDecoder: VideoDecoder
@@ -70,10 +68,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
                 mStartLock.wait()
             }
         }
-    }
-
-    fun surfaceCreated(surface: Surface) {
-        prepareGL()
     }
 
     fun prepareGL() {
@@ -110,10 +104,12 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 
     private var beginTime = System.nanoTime()
     override fun decodeFrameBegin() {
+        super.decodeFrameBegin()
         beginTime = System.currentTimeMillis()
     }
 
     override fun decodeFrameEnd() {
+        super.decodeFrameEnd()
         mVideoEncoder.drainEncoderWithNoTimeOut(true)
         mInputWindowSurface.release()
         mVideoEncoder.release()
@@ -122,7 +118,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 
     override fun decodeOneFrame(pts: Long) {
         draw()
-
         //recording
         if (recordingEnable) {
             mInputWindowSurface.makeCurrentReadFrom(mOffScreenWindowSurface)
@@ -193,12 +188,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
             BIT_RATE,
             outputFile
         )
-//        mVideoEncoder = VideoEncoder(
-//            WIDTH,
-//            HEIGHT,
-//            BIT_RATE,
-//            outputFile
-//        )
         mInputWindowSurface = WindowSurface(mEglCore, mVideoEncoder.mInputSurface, true)
         recordingEnable = true
     }
@@ -211,11 +200,8 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 
     private fun draw() {
         GLUtils.checkGlError("draw start")
-        // Clear to a non-black color to make the content easily differentiable from
-        // the pillar-/letter-boxing.
         GLES30.glClearColor(0f, 0f, 0f, 1.0f)
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
-
         mSurfaceTexture.getTransformMatrix(filter.transformMatrix)
         mSurfaceTexture.updateTexImage()
         filter.drawFrame()

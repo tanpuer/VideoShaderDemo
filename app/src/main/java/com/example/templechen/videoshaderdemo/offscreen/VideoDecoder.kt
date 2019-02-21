@@ -11,7 +11,6 @@ import java.io.FileNotFoundException
 import java.lang.RuntimeException
 
 
-
 class VideoDecoder(file: File) {
 
     companion object {
@@ -66,13 +65,8 @@ class VideoDecoder(file: File) {
         var mBufferInfo = MediaCodec.BufferInfo()
         var outputDone = false
         var inputDone = false
-
         mFrameCallback?.decodeFrameBegin()
-
-        val startMs = System.currentTimeMillis()
-
         while (!outputDone) {
-
             //feed more data to the decoder
             if (!inputDone) {
                 val inputBufferIndex = mMediaCodec.dequeueInputBuffer(TIMEOUT_USEC)
@@ -119,12 +113,9 @@ class VideoDecoder(file: File) {
                         outputDone = true
                     }
 
-                    val doRender = mBufferInfo.size !== 0
-
-//                    decodeDelay(mBufferInfo, startMs)
-
+                    val doRender = mBufferInfo.size != 0
                     mMediaCodec.releaseOutputBuffer(decoderStatus, doRender)
-                    if (doRender && mBufferInfo.presentationTimeUs >0) {
+                    if (doRender && mBufferInfo.presentationTimeUs > 0) {
                         mFrameCallback?.decodeOneFrame(mBufferInfo.presentationTimeUs)
                     }
                 }
@@ -135,24 +126,4 @@ class VideoDecoder(file: File) {
         mMediaCodec.release()
         mMediaExtractor.release()
     }
-
-    interface FrameCallback {
-        fun decodeFrameBegin() {}
-        fun decodeOneFrame(pts: Long) {}
-        fun decodeFrameEnd() {}
-    }
-
-    private fun decodeDelay(bufferInfo: MediaCodec.BufferInfo, startMs: Long) {
-        val delayTime = bufferInfo.presentationTimeUs / 1000 - (System.currentTimeMillis() - startMs)
-        if (delayTime > 0) {
-            Log.d(TAG, "decodeDelay: video delay $delayTime")
-            try {
-                Thread.sleep(delayTime)
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-
-        }
-    }
-
 }

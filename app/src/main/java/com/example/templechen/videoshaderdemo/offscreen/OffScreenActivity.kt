@@ -8,8 +8,6 @@ import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.SurfaceHolder
-import android.view.SurfaceView
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -73,10 +71,15 @@ class OffScreenActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun initRenderThread() {
+        val file = File(Environment.getExternalStorageDirectory().absolutePath + "/trailer.mp4")
+        if (!file.exists()) {
+            Toast.makeText(this, "no mp4 in sdcard, please check", Toast.LENGTH_LONG).show()
+            return
+        }
         mOffscreenActivityHandler = OffScreenActivityHandler(this)
         mOffScreenRenderThread = OffScreenRenderThread(
             this,
-            File(Environment.getExternalStorageDirectory().absolutePath + "/trailer.mp4"),
+            file,
             mOffscreenActivityHandler
         )
         mOffScreenRenderThread.start()
