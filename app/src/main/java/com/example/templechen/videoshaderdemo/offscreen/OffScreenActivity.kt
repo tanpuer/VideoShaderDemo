@@ -28,7 +28,6 @@ class OffScreenActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var mDurationText: TextView
     private lateinit var mOffscreenActivityHandler: OffScreenActivityHandler
     private var startTime = -1L
-    private lateinit var mSurfaceView: SurfaceView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,21 +49,6 @@ class OffScreenActivity : AppCompatActivity(), View.OnClickListener {
         } else {
             initRenderThread()
         }
-
-        mSurfaceView = findViewById(R.id.surface_view)
-        mSurfaceView.holder.addCallback(object: SurfaceHolder.Callback {
-            override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-//                mOffScreenRenderThread.mRenderHandler.sendSurfaceCreate(holder?.surface!!)
-            }
-
-            override fun surfaceDestroyed(holder: SurfaceHolder?) {
-            }
-
-            override fun surfaceCreated(holder: SurfaceHolder?) {
-
-            }
-
-        })
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -76,7 +60,7 @@ class OffScreenActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun setDuration() {
-        mDurationText.text = "Duration : ${(System.currentTimeMillis() - startTime)/1000f}"
+        mDurationText.text = "Duration : ${(System.currentTimeMillis() - startTime) / 1000f}"
     }
 
     override fun onClick(v: View?) {

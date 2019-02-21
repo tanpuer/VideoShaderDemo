@@ -9,15 +9,14 @@ import android.util.Log
 import android.view.Surface
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.filter.BaseFilter
-import com.example.templechen.videoshaderdemo.filter.GrayFilter
 import com.example.templechen.videoshaderdemo.gl.egl.EglCore
 import com.example.templechen.videoshaderdemo.gl.egl.OffscreenSurface
 import com.example.templechen.videoshaderdemo.gl.egl.WindowSurface
-import com.example.templechen.videoshaderdemo.gl.encoder.VideoEncoder
 import java.io.File
 import java.lang.Exception
 
-class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandler: OffScreenActivityHandler) : Thread(), VideoDecoder.FrameCallback{
+class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandler: OffScreenActivityHandler) :
+    Thread(), VideoDecoder.FrameCallback {
 
     companion object {
         const val TAG = "OffScreenRenderThread"
@@ -29,7 +28,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
     private var mOffScreenActivityHandler = offScreenActivityHandler
     private lateinit var mEglCore: EglCore
     private lateinit var mOffScreenWindowSurface: OffscreenSurface
-//    private lateinit var mOffScreenWindowSurface: WindowSurface
+    //    private lateinit var mOffScreenWindowSurface: WindowSurface
     private lateinit var mOutOutSurface: Surface
     private var mOESTextureId = -1
     private lateinit var mSurfaceTexture: SurfaceTexture
@@ -45,7 +44,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
     //recording
     private var recordingEnable = false
     private lateinit var mInputWindowSurface: WindowSurface
-//    private lateinit var mVideoEncoderThread: VideoEncoderThread
     var editorRect = Rect(0, 0, 0, 0)
     private lateinit var mVideoEncoder: VideoEncoder
 
@@ -75,7 +73,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
     }
 
     fun surfaceCreated(surface: Surface) {
-//        mOffScreenWindowSurface = WindowSurface(mEglCore, surface, false)
         prepareGL()
     }
 
@@ -98,7 +95,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 
         initEncoder()
 
-        filter = GrayFilter(mContext, mOESTextureId)
+        filter = BaseFilter(mContext, mOESTextureId)
         filter.initProgram()
     }
 
@@ -124,7 +121,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
     }
 
     override fun decodeOneFrame(pts: Long) {
-//        Log.d(TAG, "decodeOneFrame ${frames++}")
         draw()
 
         //recording
@@ -132,7 +128,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
             mInputWindowSurface.makeCurrentReadFrom(mOffScreenWindowSurface)
             GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
-            if (editorRect.width() > 0 && editorRect.height() >0) {
+            if (editorRect.width() > 0 && editorRect.height() > 0) {
                 GLES30.glBlitFramebuffer(
                     editorRect.left,
                     editorRect.top,
@@ -204,9 +200,6 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 //            outputFile
 //        )
         mInputWindowSurface = WindowSurface(mEglCore, mVideoEncoder.mInputSurface, true)
-//        mVideoEncoderThread = VideoEncoderThread(encoder)
-//        mVideoEncoderThread.start()
-//        mVideoEncoderThread.waitUntilReady()
         recordingEnable = true
     }
 

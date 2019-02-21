@@ -57,13 +57,6 @@ class VideoEncoderThread(videoEncoder: VideoEncoder) : Thread() {
         mHandler?.frameAvailable()
     }
 
-    fun frameAvailableSoonWithNoTimeout() {
-        if (!mReady) {
-            return
-        }
-        mHandler?.frameAvailiableWithNoTimeout()
-    }
-
     fun handleFrameAvailableSoon() {
         mVideoEncoder.drainEncoder(false)
     }
@@ -74,7 +67,4 @@ class VideoEncoderThread(videoEncoder: VideoEncoder) : Thread() {
         Looper.myLooper()?.quit()
     }
 
-    fun handleFrameAvailableSoonWithNoTimeout() {
-        mVideoEncoder.drainEncoderWithNoTimeOut(false)
-    }
 }

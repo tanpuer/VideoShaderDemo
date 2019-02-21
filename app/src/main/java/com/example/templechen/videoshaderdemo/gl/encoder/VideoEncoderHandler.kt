@@ -11,7 +11,6 @@ class VideoEncoderHandler(videoEncoderRunnable: VideoEncoderThread) : Handler() 
     companion object {
         const val MSG_STOP_RECORDING = 1
         const val MSG_FRAME_AVAILABLE = 2
-        const val MSG_FRAME_AVAILABLE_NO_TIME_OUT = 3
     }
 
     private var weakVideoEncoderThread = WeakReference<VideoEncoderThread>(videoEncoderRunnable)
@@ -22,10 +21,6 @@ class VideoEncoderHandler(videoEncoderRunnable: VideoEncoderThread) : Handler() 
 
     fun frameAvailable() {
         sendMessage(obtainMessage(MSG_FRAME_AVAILABLE))
-    }
-
-    fun frameAvailiableWithNoTimeout() {
-        sendMessage(obtainMessage(MSG_FRAME_AVAILABLE_NO_TIME_OUT))
     }
 
     override fun handleMessage(msg: Message?) {
@@ -40,9 +35,6 @@ class VideoEncoderHandler(videoEncoderRunnable: VideoEncoderThread) : Handler() 
             }
             MSG_FRAME_AVAILABLE -> {
                 videoEncoderThread.handleFrameAvailableSoon()
-            }
-            MSG_FRAME_AVAILABLE_NO_TIME_OUT -> {
-                videoEncoderThread.handleFrameAvailableSoonWithNoTimeout()
             }
             else -> {
                 throw RuntimeException("unhandled msg what $what")

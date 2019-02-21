@@ -1,10 +1,9 @@
-package com.example.templechen.videoshaderdemo.gl.encoder
+package com.example.templechen.videoshaderdemo.offscreen
 
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
-import android.util.Log
 import android.view.Surface
 import java.io.File
 import java.lang.RuntimeException
@@ -53,19 +52,18 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
         mMuxer.release()
     }
 
-    fun drainEncoder(endOfStream: Boolean) {
-        val TIMEOUT_USEC = 10000
+    fun drainEncoderWithNoTimeOut(endOfStream: Boolean) {
         if (endOfStream) {
             mEncoder.signalEndOfInputStream()
         }
         while (true) {
-            val encoderStatus = mEncoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC.toLong())
+            val encoderStatus = mEncoder.dequeueOutputBuffer(mBufferInfo, 0)
             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 // no output available yet
                 if (!endOfStream) {
                     break     // out of while
                 } else {
-                    Log.d(TAG, "no output available, spinning to await EOS")
+//                    Log.d(TAG, "no output available, spinning to await EOS")
                 }
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 if (mMuxerStarted) {
@@ -82,7 +80,7 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
                 if (encodedData == null) {
                     throw RuntimeException("encoderOutputBuffer $encoderStatus is null")
                 }
-                if ((mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0)) {
+                if (mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
                     mBufferInfo.size = 0
                 }
                 if (mBufferInfo.size != 0) {
@@ -101,5 +99,4 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
             }
         }
     }
-    
 }
