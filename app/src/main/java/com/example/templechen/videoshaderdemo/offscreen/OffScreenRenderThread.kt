@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Surface
 import com.example.templechen.videoshaderdemo.GLUtils
 import com.example.templechen.videoshaderdemo.filter.BaseFilter
+import com.example.templechen.videoshaderdemo.filter.GrayFilter
 import com.example.templechen.videoshaderdemo.gl.egl.EglCore
 import com.example.templechen.videoshaderdemo.gl.egl.OffscreenSurface
 import com.example.templechen.videoshaderdemo.gl.egl.WindowSurface
@@ -110,19 +111,20 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
         }
     }
 
+    private var beginTime = System.currentTimeMillis()
     override fun decodeFrameBegin() {
-
+        beginTime = System.currentTimeMillis()
     }
 
     override fun decodeFrameEnd() {
         mVideoEncoder.drainEncoderWithNoTimeOut(true)
         mInputWindowSurface.release()
+        mVideoEncoder.release()
         mOffScreenActivityHandler.sendOffscreenEnd()
     }
 
     override fun decodeOneFrame(pts: Long) {
-        Log.d(TAG, "decodeOneFrame ${frames++}")
-
+//        Log.d(TAG, "decodeOneFrame ${frames++}")
         draw()
 
         //recording
@@ -161,7 +163,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
             if (err != GLES30.GL_NO_ERROR) {
                 Log.w(TAG, "ERROR: glBlitFramebuffer failed: 0x" + Integer.toHexString(err))
             }
-            mInputWindowSurface.setPresentationTime(pts)
+            mInputWindowSurface.setPresentationTime(pts + beginTime)
             mInputWindowSurface.swapBuffers()
             mVideoEncoder.drainEncoderWithNoTimeOut(false)
             mOffScreenWindowSurface.makeCurrent()
@@ -189,13 +191,18 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
             outputFile.delete()
             outputFile = File(mContext.cacheDir, "gltest.mp4")
         }
-        //if set editorRect, then 1280 * 720, if not set, the same size of mWindowSurface
         mVideoEncoder = VideoEncoder(
             if (editorRect.width() > 0 && editorRect.height() > 0) WIDTH else mOffScreenWindowSurface.width,
             if (editorRect.width() > 0 && editorRect.height() > 0) HEIGHT else mOffScreenWindowSurface.height,
             BIT_RATE,
             outputFile
         )
+//        mVideoEncoder = VideoEncoder(
+//            WIDTH,
+//            HEIGHT,
+//            BIT_RATE,
+//            outputFile
+//        )
         mInputWindowSurface = WindowSurface(mEglCore, mVideoEncoder.mInputSurface, true)
 //        mVideoEncoderThread = VideoEncoderThread(encoder)
 //        mVideoEncoderThread.start()
@@ -218,9 +225,7 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
 
         mSurfaceTexture.getTransformMatrix(filter.transformMatrix)
         mSurfaceTexture.updateTexImage()
-        Log.d(TAG, GLUtils.checkGlError("draw start").toString())
         filter.drawFrame()
-        Log.d(TAG, GLUtils.checkGlError("draw end").toString())
     }
 
 }

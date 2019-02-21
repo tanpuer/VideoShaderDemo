@@ -55,7 +55,6 @@ class OffScreenActivity : AppCompatActivity(), View.OnClickListener {
         mSurfaceView.holder.addCallback(object: SurfaceHolder.Callback {
             override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
                 mOffScreenRenderThread.mRenderHandler.sendSurfaceCreate(holder?.surface!!)
-                mOffScreenRenderThread.mRenderHandler.prepareOffscreenRender()
             }
 
             override fun surfaceDestroyed(holder: SurfaceHolder?) {

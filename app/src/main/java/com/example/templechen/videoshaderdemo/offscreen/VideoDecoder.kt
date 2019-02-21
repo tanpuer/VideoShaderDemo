@@ -67,6 +67,8 @@ class VideoDecoder(file: File) {
         var outputDone = false
         var inputDone = false
 
+        mFrameCallback?.decodeFrameBegin()
+
         while (!outputDone) {
 
             //feed more data to the decoder
@@ -117,11 +119,10 @@ class VideoDecoder(file: File) {
 
                     val doRender = mBufferInfo.size !== 0
 
-                    if (doRender && mFrameCallback != null) {
-                        mFrameCallback?.decodeFrameBegin()
-                    }
                     mMediaCodec.releaseOutputBuffer(decoderStatus, doRender)
-                    mFrameCallback?.decodeOneFrame(mBufferInfo.presentationTimeUs)
+                    if (doRender && mBufferInfo.presentationTimeUs >0) {
+                        mFrameCallback?.decodeOneFrame(mBufferInfo.presentationTimeUs)
+                    }
                 }
             }
         }

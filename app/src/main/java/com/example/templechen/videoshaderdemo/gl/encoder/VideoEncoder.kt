@@ -9,6 +9,7 @@ import android.view.Surface
 import java.io.File
 import java.lang.RuntimeException
 
+
 class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: File) {
 
     companion object {
@@ -27,6 +28,7 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
     private var mMuxerStarted = false
     private var mFrameIndex = 0
 
+
     init {
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
         format.setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
@@ -39,9 +41,11 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
         mMuxer = MediaMuxer(outputFile.toString(), MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
         mTrackIndex = -1
         mMuxerStarted = false
+
     }
 
     fun release() {
+        mInputSurface?.release()
         mEncoder.stop()
         mEncoder.release()
         mMuxer.stop()
@@ -88,6 +92,7 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
                     encodedData.position(mBufferInfo.offset)
                     encodedData.limit(mBufferInfo.offset + mBufferInfo.size)
                     mMuxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo)
+                    Log.d(TAG, mBufferInfo.flags.toString())
                     Log.d(TAG, mFrameIndex++.toString())
                 }
                 mEncoder.releaseOutputBuffer(encoderStatus, false)
@@ -97,6 +102,7 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
             }
         }
     }
+
 
     fun drainEncoderWithNoTimeOut(endOfStream: Boolean) {
         if (endOfStream) {
@@ -127,7 +133,7 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
                 if (encodedData == null) {
                     throw RuntimeException("encoderOutputBuffer $encoderStatus is null")
                 }
-                if ((mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0)) {
+                if (mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
                     mBufferInfo.size = 0
                 }
                 if (mBufferInfo.size != 0) {
@@ -138,7 +144,8 @@ class VideoEncoder(val width: Int, val height: Int, bitRate: Int, outputFile: Fi
                     encodedData.position(mBufferInfo.offset)
                     encodedData.limit(mBufferInfo.offset + mBufferInfo.size)
                     mMuxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo)
-                    Log.d(TAG, mFrameIndex++.toString())
+//                    Log.d(TAG, mFrameIndex++.toString())
+                    Log.d(TAG, mBufferInfo.presentationTimeUs.toString())
                 }
                 mEncoder.releaseOutputBuffer(encoderStatus, false)
                 if ((mBufferInfo.flags.and(MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0)) {
