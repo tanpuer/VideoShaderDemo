@@ -114,6 +114,8 @@ class OffScreenRenderThread(context: Context, file: File, offScreenActivityHandl
         mInputWindowSurface.release()
         mVideoEncoder.release()
         mOffScreenActivityHandler.sendOffscreenEnd()
+        Looper.myLooper()?.quitSafely()
+        join()
     }
 
     override fun decodeOneFrame(pts: Long) {

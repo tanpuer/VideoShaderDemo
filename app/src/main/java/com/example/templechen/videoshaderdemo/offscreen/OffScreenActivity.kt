@@ -45,13 +45,13 @@ class OffScreenActivity : AppCompatActivity(), View.OnClickListener {
                 PERMISSION_CODE
             )
         } else {
-            initRenderThread()
+//            initRenderThread()
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == PERMISSION_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            initRenderThread()
+//            initRenderThread()
         } else {
             Toast.makeText(this, "must need write external storage permission!", Toast.LENGTH_LONG).show()
         }
@@ -64,6 +64,7 @@ class OffScreenActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.start_btn -> {
+                initRenderThread()
                 mOffScreenRenderThread.mRenderHandler.startOffscreenRender()
                 startTime = System.currentTimeMillis()
             }
